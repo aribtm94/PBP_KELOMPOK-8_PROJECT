@@ -42,4 +42,8 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+    public function cart()   { return $this->hasOne(\App\Models\Cart::class); }
+    public function orders() { return $this->hasMany(\App\Models\Order::class); }
+    public function isAdmin(): bool { return $this->role === 'admin'; }
+
 }
