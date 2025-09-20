@@ -33,6 +33,7 @@
           </form>
         @else
           <a href="{{ route('login') }}" class="px-3 py-1 border rounded">Login</a>
+          <a href="{{ route('register') }}" class="px-3 py-1 border rounded">Register</a>
         @endauth
       </div>
     </div>
