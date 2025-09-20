@@ -10,16 +10,24 @@
   <nav class="border-b bg-white">
     <div class="max-w-6xl mx-auto px-4 py-3 flex gap-4 items-center">
       <a href="{{ route('home') }}" class="font-bold">{{ config('app.name') }}</a>
+
+      {{-- Link umum --}}
       <a href="{{ route('home') }}" class="hover:underline">Produk</a>
-      <a href="{{ route('cart.index') }}" class="hover:underline">
-        Keranjang ({{ auth()->user()?->cart?->items()->sum('qty') ?? 0 }})
-      </a>
+
       <div class="ml-auto flex gap-3 items-center">
         @auth
-          <a href="{{ route('orders.index') }}" class="hover:underline">Pesanan</a>
-          @can('admin')
-            <a href="{{ route('admin.products.index') }}" class="hover:underline">Dashboard Admin</a>
-          @endcan
+          @if(auth()->user()->role === 'admin')
+            {{-- ADMIN: hanya menu admin --}}
+            <a href="{{ route('admin.products.index') }}" class="hover:underline">Kelola Produk</a>
+            <a href="{{ route('admin.orders.index') }}" class="hover:underline">Pesanan</a>
+          @else
+            {{-- USER: menu pembeli --}}
+            <a href="{{ route('cart.index') }}" class="hover:underline">
+              Keranjang ({{ auth()->user()->cart?->items()->sum('qty') ?? 0 }})
+            </a>
+            <a href="{{ route('orders.index') }}" class="hover:underline">Pesanan Saya</a>
+          @endif
+
           <form method="POST" action="{{ route('logout') }}">@csrf
             <button class="px-3 py-1 border rounded">Logout</button>
           </form>
@@ -29,6 +37,7 @@
       </div>
     </div>
   </nav>
+
 
   <main class="max-w-6xl mx-auto px-4 py-6 w-full flex-1">
     @if(session('success')) <div class="mb-3 p-3 bg-green-100 rounded">{{ session('success') }}</div> @endif

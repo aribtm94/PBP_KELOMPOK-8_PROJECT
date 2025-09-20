@@ -10,13 +10,14 @@ return new class extends Migration {
             $table->id();
             $table->string('name');
             $table->foreignId('category_id')->nullable()->constrained()->nullOnDelete();
-            $table->unsignedInteger('price');     // rupiah
+            $table->unsignedInteger('price');
             $table->unsignedInteger('stock')->default(0);
-            $table->boolean('is_active')->default(true);
             $table->string('image_path')->nullable();
+            $table->boolean('is_active')->default(true);
             $table->text('description')->nullable();
             $table->timestamps();
         });
+
     }
     public function down(): void { Schema::dropIfExists('products'); }
 };
