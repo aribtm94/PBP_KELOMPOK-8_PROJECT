@@ -2,6 +2,13 @@
 
 @section('content')
 <h1 class="text-xl font-bold mb-3">Checkout</h1>
+
+@if ($errors->any())
+  <div class="bg-red-100 p-2 mb-3">
+    @foreach($errors->all() as $e) <div>{{ $e }}</div> @endforeach
+  </div>
+@endif
+
 <form method="POST" action="{{ route('checkout.store') }}" class="grid md:grid-cols-2 gap-4">@csrf
   <div class="border rounded p-3">
     <h2 class="font-semibold">Alamat Pengiriman</h2>
@@ -13,7 +20,7 @@
     <h2 class="font-semibold">Ringkasan Pesanan</h2>
     <ul class="list-disc ml-5">
       @foreach($cart->items as $i)
-        <li>{{ $i->product->name }} × {{ $i->qty }} = Rp {{ number_format($i->qty*$i->product->price,0,',','.') }}</li>
+        <li>{{ $i->product->name }} × {{ $i->qty }} = Rp {{ number_format($i->qty * $i->product->price,0,',','.') }}</li>
       @endforeach
     </ul>
     <div class="mt-2">Total: <b>Rp {{ number_format($cart->total(),0,',','.') }}</b></div>
