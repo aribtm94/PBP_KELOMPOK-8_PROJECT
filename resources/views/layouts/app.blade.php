@@ -6,7 +6,7 @@
   <title>{{ config('app.name') }}</title>
   @vite(['resources/css/app.css','resources/js/app.js'])
 </head>
-<body class="min-h-screen flex flex-col bg-white text-gray-800">
+<body class="min-h-screen flex flex-col bg-#16302B text-gray-800">
   <nav class="border-b bg-white">
     <div class="max-w-6xl mx-auto px-4 py-3 flex gap-4 items-center">
       <a href="{{ route('home') }}" class="font-bold">{{ config('app.name') }}</a>
