@@ -18,10 +18,28 @@ class DemoSeeder extends Seeder {
         );
         Cart::firstOrCreate(['user_id'=>$user->id]);
 
+        // Membuat kategori fashion
         $kemeja = Category::firstOrCreate(['name'=>'Kemeja']);
         $kaos   = Category::firstOrCreate(['name'=>'Kaos']);
+        $celana = Category::firstOrCreate(['name'=>'Celana']);
+        $jaket  = Category::firstOrCreate(['name'=>'Jaket']);
 
-        Product::create(['name'=>'Kemeja Linen Putih','category_id'=>$kemeja->id,'price'=>179000,'stock'=>10,'is_active'=>true]);
-        Product::create(['name'=>'Kaos Graphic Hitam','category_id'=>$kaos->id,'price'=>99000,'stock'=>25,'is_active'=>true]);
+        // Produk untuk setiap kategori
+        Product::firstOrCreate(
+            ['name'=>'Kemeja Linen Putih'],
+            ['category_id'=>$kemeja->id,'price'=>179000,'stock'=>10,'is_active'=>true]
+        );
+        Product::firstOrCreate(
+            ['name'=>'Kaos Graphic Hitam'],
+            ['category_id'=>$kaos->id,'price'=>99000,'stock'=>25,'is_active'=>true]
+        );
+        Product::firstOrCreate(
+            ['name'=>'Celana Jeans Slim Fit'],
+            ['category_id'=>$celana->id,'price'=>299000,'stock'=>15,'is_active'=>true]
+        );
+        Product::firstOrCreate(
+            ['name'=>'Jaket Denim Vintage'],
+            ['category_id'=>$jaket->id,'price'=>399000,'stock'=>8,'is_active'=>true]
+        );
     }
 }

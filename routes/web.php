@@ -12,6 +12,13 @@ use App\Http\Controllers\Admin\{
 Route::get('/', [ProductController::class, 'index'])->name('home');
 Route::get('/products/{product}', [ProductController::class, 'show'])->name('products.show');
 
+// 2) Route untuk kategori
+Route::get('/kemeja', [ProductController::class, 'kemeja'])->name('kemeja');
+Route::get('/kaos', [ProductController::class, 'kaos'])->name('kaos');
+Route::get('/celana', [ProductController::class, 'celana'])->name('celana');
+Route::get('/jaket', [ProductController::class, 'jaket'])->name('jaket');
+Route::get('/dress', [ProductController::class, 'dress'])->name('dress');
+
 // 2) Rute PEMBELI SAJA (admin ditolak oleh middleware 'useronly')
 Route::middleware(['auth','useronly'])->group(function () {
     Route::get('/cart', [CartController::class,'index'])->name('cart.index');

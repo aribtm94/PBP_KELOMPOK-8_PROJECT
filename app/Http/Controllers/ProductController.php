@@ -36,4 +36,45 @@ class ProductController extends Controller
 
         return view('products.show', compact('product', 'related'));
     }
+
+    // Method untuk kategori spesifik
+    public function kemeja(Request $r)
+    {
+        return $this->getProductsByCategory('Kemeja', $r);
+    }
+
+    public function kaos(Request $r)
+    {
+        return $this->getProductsByCategory('Kaos', $r);
+    }
+
+    public function celana(Request $r)
+    {
+        return $this->getProductsByCategory('Celana', $r);
+    }
+
+    public function jaket(Request $r)
+    {
+        return $this->getProductsByCategory('Jaket', $r);
+    }
+
+    // Helper method untuk filtering berdasarkan kategori
+    private function getProductsByCategory($categoryName, Request $r)
+    {
+        $category = Category::where('name', $categoryName)->firstOrFail();
+        
+        $q = Product::query()->with('category')->where('is_active', true)
+                    ->where('category_id', $category->id);
+
+        if ($r->filled('search')) {
+            $term = (string) $r->string('search');
+            $q->where('name', 'like', "%{$term}%");
+        }
+
+        $products = $q->latest()->paginate(12)->withQueryString();
+        $categories = Category::orderBy('name')->get();
+
+        return view('products.index', compact('products', 'categories'))
+               ->with('selectedCategory', $category);
+    }
 }
