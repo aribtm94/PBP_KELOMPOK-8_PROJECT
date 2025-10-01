@@ -17,6 +17,7 @@ Route::get('/kemeja', [ProductController::class, 'kemeja'])->name('kemeja');
 Route::get('/kaos', [ProductController::class, 'kaos'])->name('kaos');
 Route::get('/celana', [ProductController::class, 'celana'])->name('celana');
 Route::get('/jaket', [ProductController::class, 'jaket'])->name('jaket');
+Route::get('/shirt', [ProductController::class, 'shirt'])->name('shirt');
 Route::get('/dress', [ProductController::class, 'dress'])->name('dress');
 
 // 2) Rute PEMBELI SAJA (admin ditolak oleh middleware 'useronly')

@@ -429,8 +429,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8 w-full flex-1">
-    @if(session('success')) <div class="mb-3 p-3 bg-green-100 rounded text-green-800 text-sm sm:text-base">{{ session('success') }}</div> @endif
-    @if(session('error'))   <div class="mb-3 p-3 bg-red-100 rounded text-red-800 text-sm sm:text-base">{{ session('error') }}</div>   @endif
+    @if(session('success')) <div class="mb-3 p-3 bg-[#A38560]/20 rounded border border-[#A38560]/30 text-sm sm:text-base" style="color: #E0E0E0;">{{ session('success') }}</div> @endif
+    @if(session('error'))   <div class="mb-3 p-3 bg-red-500/20 rounded border border-red-500/30 text-sm sm:text-base" style="color: #E0E0E0;">{{ session('error') }}</div>   @endif
     
     @yield('content')
   </main>
