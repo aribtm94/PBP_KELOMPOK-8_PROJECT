@@ -27,39 +27,44 @@
 
         <!-- Color Selection -->
         <div class="space-y-3">
-            <label class="text-sm font-medium text-white">Select Color</label>
+            <label class="text-sm font-bold text-white">Select Color <span class="text-red-400">*</span></label>
             <div class="flex gap-3">
                 <button class="w-8 h-8 bg-red-600 rounded-full border-2 border-transparent hover:border-white transition-colors" data-color="red"></button>
-                <button class="w-8 h-8 bg-black rounded-full border-2 border-white transition-colors" data-color="black"></button>
+                <button class="w-8 h-8 bg-black rounded-full border-2 border-transparent transition-colors hover:border-white" data-color="black"></button>
                 <button class="w-8 h-8 bg-amber-800 rounded-full border-2 border-transparent hover:border-white transition-colors" data-color="brown"></button>
             </div>
         </div>
 
         <!-- Size Selection -->
         <div class="space-y-3">
-            <label class="text-sm font-medium text-white">Select Size</label>
+            <label class="text-sm font-bold text-white">Select Size <span class="text-red-400">*</span></label>
             <div class="flex gap-3">
-                <button class="px-4 py-2 border border-white text-white rounded-lg hover:bg-white hover:text-[#16302B] transition-colors" data-size="S">S</button>
-                <button class="px-4 py-2 border border-white text-white rounded-lg hover:bg-white hover:text-[#16302B] transition-colors" data-size="M">M</button>
-                <button class="px-4 py-2 border border-white text-white rounded-lg hover:bg-white hover:text-[#16302B] transition-colors" data-size="L">L</button>
-                <button class="px-4 py-2 border border-white text-white rounded-lg hover:bg-white hover:text-[#16302B] transition-colors" data-size="XL">XL</button>
-                <button class="px-4 py-2 border border-white text-white rounded-lg hover:bg-white hover:text-[#16302B] transition-colors" data-size="XXL">XXL</button>
+                <button class="px-4 py-2 border border-white text-white rounded-lg hover:bg-white hover:text-[#16302B] transition-colors font-bold bg-transparent" data-size="S">S</button>
+                <button class="px-4 py-2 border border-white text-white rounded-lg hover:bg-white hover:text-[#16302B] transition-colors font-bold bg-transparent" data-size="M">M</button>
+                <button class="px-4 py-2 border border-white text-white rounded-lg hover:bg-white hover:text-[#16302B] transition-colors font-bold bg-transparent" data-size="L">L</button>
+                <button class="px-4 py-2 border border-white text-white rounded-lg hover:bg-white hover:text-[#16302B] transition-colors font-bold bg-transparent" data-size="XL">XL</button>
+                <button class="px-4 py-2 border border-white text-white rounded-lg hover:bg-white hover:text-[#16302B] transition-colors font-bold bg-transparent" data-size="XXL">XXL</button>
             </div>
         </div>
 
         <!-- Add to Cart Section -->
         @auth
-        <form method="POST" action="{{ route('cart.add', $product) }}" class="space-y-4">
+        <form method="POST" action="{{ route('cart.add', $product) }}" class="space-y-4" onsubmit="return validateForm()">
             @csrf
-            <input type="hidden" id="selected-color" name="color" value="red">
-            <input type="hidden" id="selected-size" name="size" value="M">
+            <input type="hidden" id="selected-color" name="color" value="">
+            <input type="hidden" id="selected-size" name="size" value="">
+            
+            <!-- Error Message Container -->
+            <div id="error-message" class="hidden bg-red-600 text-white px-4 py-2 rounded-lg text-sm">
+                Please select both color and size before adding to cart.
+            </div>
             
             <!-- Quantity and Add to Cart -->
             <div class="flex items-center gap-4">
                 <div class="flex items-center border border-white rounded-lg">
-                    <button type="button" class="px-3 py-2 text-white hover:bg-white hover:text-[#16302B] transition-colors" onclick="decreaseQty()">-</button>
+                    <button type="button" class="px-3 py-2 text-white hover:bg-white hover:text-[#16302B] transition-colors rounded-l-lg" onclick="decreaseQty()">-</button>
                     <input id="qty" name="qty" type="text" value="1" class="w-16 py-2 text-center bg-transparent text-white border-0 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" readonly>
-                    <button type="button" class="px-3 py-2 text-white hover:bg-white hover:text-[#16302B] transition-colors" onclick="increaseQty()">+</button>
+                    <button type="button" class="px-3 py-2 text-white hover:bg-white hover:text-[#16302B] transition-colors rounded-r-lg" onclick="increaseQty()">+</button>
                 </div>
                 
                 <button type="submit" class="flex-1 bg-[#A38560] text-white py-3 px-6 rounded-lg font-semibold hover:bg-[#8B7355] transition-colors flex items-center justify-center gap-2">
@@ -293,6 +298,29 @@
 </div>
 
 <script>
+// Form validation function
+function validateForm() {
+    const selectedColor = document.getElementById('selected-color').value;
+    const selectedSize = document.getElementById('selected-size').value;
+    const errorMessage = document.getElementById('error-message');
+    
+    if (!selectedColor || !selectedSize) {
+        // Show error message
+        errorMessage.classList.remove('hidden');
+        
+        // Hide error message after 5 seconds
+        setTimeout(() => {
+            errorMessage.classList.add('hidden');
+        }, 5000);
+        
+        return false; // Prevent form submission
+    }
+    
+    // Hide error message if validation passes
+    errorMessage.classList.add('hidden');
+    return true; // Allow form submission
+}
+
 // Color selection
 document.querySelectorAll('[data-color]').forEach(button => {
     button.addEventListener('click', function() {
@@ -308,6 +336,12 @@ document.querySelectorAll('[data-color]').forEach(button => {
         
         // Update hidden input
         document.getElementById('selected-color').value = this.dataset.color;
+        
+        // Hide error message when user selects color
+        const errorMessage = document.getElementById('error-message');
+        if (errorMessage) {
+            errorMessage.classList.add('hidden');
+        }
     });
 });
 
@@ -326,6 +360,12 @@ document.querySelectorAll('[data-size]').forEach(button => {
         
         // Update hidden input
         document.getElementById('selected-size').value = this.dataset.size;
+        
+        // Hide error message when user selects size
+        const errorMessage = document.getElementById('error-message');
+        if (errorMessage) {
+            errorMessage.classList.add('hidden');
+        }
     });
 });
 
@@ -406,23 +446,26 @@ function goToSlide(slideIndex) {
     updateSlider();
 }
 
-// Set default selections
+// Initialize default state
 document.addEventListener('DOMContentLoaded', function() {
-    // Set default color (black) - only if not already selected
-    const blackButton = document.querySelector('[data-color="black"]');
-    if (blackButton && !blackButton.classList.contains('border-white')) {
-        blackButton.click();
-    }
+    // Reset all colors to default state - no auto-selection
+    document.querySelectorAll('[data-color]').forEach(btn => {
+        btn.classList.remove('border-white');
+        btn.classList.add('border-transparent');
+    });
     
-    // Don't auto-select size - let user choose
-    // Reset all sizes to default state
+    // Reset all sizes to default state - no auto-selection
     document.querySelectorAll('[data-size]').forEach(btn => {
         btn.classList.remove('bg-white', 'text-[#16302B]');
         btn.classList.add('bg-transparent', 'text-white');
     });
     
-    // Clear the selected size value
+    // Clear the hidden input values
+    const colorInput = document.getElementById('selected-color');
     const sizeInput = document.getElementById('selected-size');
+    if (colorInput) {
+        colorInput.value = '';
+    }
     if (sizeInput) {
         sizeInput.value = '';
     }

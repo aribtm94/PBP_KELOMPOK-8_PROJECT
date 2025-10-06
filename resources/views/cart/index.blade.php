@@ -63,15 +63,18 @@
         <div class="max-w-7xl mx-auto">
             <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 sm:mb-8 text-left text-dark-maroon">Shopping Cart</h1>
 
-            @if($cart->items->isEmpty())
-                <div class="text-center text-lg sm:text-xl text-dark-maroon">Your cart is empty.</div>
-            @else
-                <div class="flex flex-col lg:flex-row justify-center gap-4 lg:gap-8">
+            <div class="flex flex-col lg:flex-row justify-center gap-4 lg:gap-8">
                     <!-- Produk Table - Kotak Kiri dengan Rounded -->
                     <div class="w-full lg:w-3/4 bg-white rounded-2xl overflow-hidden shadow-lg">
                         <!-- Mobile: Stack layout -->
                         <div class="block sm:hidden">
-                            @foreach($cart->items as $i)
+                            @if($cart->items->isEmpty())
+                                <div class="p-8 text-center text-dark-green">
+                                    <div class="text-lg font-semibold mb-2">Your cart is empty</div>
+                                    <p class="text-sm">Add some products to get started!</p>
+                                </div>
+                            @else
+                                @foreach($cart->items as $i)
                                 <div class="p-4 border-b border-light-gray">
                                     <div class="space-y-2">
                                         <div class="font-semibold text-dark-green">{{ $i->product->name }}</div>
@@ -95,6 +98,7 @@
                                     </div>
                                 </div>
                             @endforeach
+                            @endif
                         </div>
 
                         <!-- Desktop: Table layout -->
@@ -110,7 +114,15 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                @foreach($cart->items as $i)
+                                @if($cart->items->isEmpty())
+                                    <tr>
+                                        <td colspan="5" class="p-8 text-center text-dark-green">
+                                            <div class="text-lg font-semibold mb-2">Your cart is empty</div>
+                                            <p class="text-sm">Add some products to get started!</p>
+                                        </td>
+                                    </tr>
+                                @else
+                                    @foreach($cart->items as $i)
                                     <tr class="border-t border-light-gray">
                                         <td class="p-3 sm:p-4 text-left text-dark-green text-sm sm:text-base">{{ $i->product->name }}</td>
                                         <td class="p-3 sm:p-4 text-center text-dark-green">
@@ -130,6 +142,7 @@
                                         </td>
                                     </tr>
                                 @endforeach
+                                @endif
                                 </tbody>
                             </table>
                         </div>
@@ -154,7 +167,7 @@
                         <div class="space-y-2 sm:space-y-3 mb-4">
                             <div class="flex justify-between text-dark-maroon text-sm sm:text-base">
                                 <span>Sub Total</span>
-                                <span data-subtotal>Rp {{ number_format($cart->total(), 0, ',', '.') }}</span>
+                                <span data-subtotal>Rp {{ number_format($cart->total() ?? 0, 0, ',', '.') }}</span>
                             </div>
                             <div class="flex justify-between text-dark-maroon text-sm sm:text-base" id="discount-row">
                                 <span>Discount</span>
@@ -165,14 +178,20 @@
                         <div class="border-t-2 border-dark-maroon pt-3 mb-4 sm:mb-6">
                             <div class="flex justify-between font-bold text-base sm:text-lg text-dark-maroon">
                                 <span>Total</span>
-                                <span id="final-total" data-final-total>Rp {{ number_format($cart->total(), 0, ',', '.') }}</span>
+                                <span id="final-total" data-final-total>Rp {{ number_format($cart->total() ?? 0, 0, ',', '.') }}</span>
                             </div>
                         </div>
                         
                         <div class="space-y-2 sm:space-y-3">
-                            <a href="{{ route('checkout.show') }}" class="block w-full bg-[#390517] text-light-gray text-center px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity text-sm sm:text-base">
-                                Checkout Now
-                            </a>
+                            @if($cart->items->isEmpty())
+                                <div class="block w-full bg-gray-400 text-gray-600 text-center px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold text-sm sm:text-base cursor-not-allowed">
+                                    Checkout Now
+                                </div>
+                            @else
+                                <a href="{{ route('checkout.show') }}" class="block w-full bg-[#390517] text-light-gray text-center px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity text-sm sm:text-base">
+                                    Checkout Now
+                                </a>
+                            @endif
                             <a href="{{ url('/') }}" class="block w-full border-2 border-dark-maroon text-center px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold text-dark-maroon hover:bg-gray-50 transition-colors text-sm sm:text-base">
                                 Continue Shopping
                             </a>
@@ -181,12 +200,14 @@
                 </div>
                 
                 <!-- Update Cart Button - Kembali ke bawah tabel sebelah kiri -->
+                @if(!$cart->items->isEmpty())
                 <div class="mt-4">
                     <button onclick="updateAllItems()" class="bg-medium-brown text-light-gray px-4 py-2 rounded-lg font-semibold hover:opacity-90 transition-opacity text-sm sm:text-base">
                         Update Cart
                     </button>
                 </div>
-            @endif
+                @endif
+            </div>
         </div>
     </div>
 
@@ -233,121 +254,64 @@
         });
 
         function increaseQty(itemId) {
-            console.log('=== INCREASE QTY CALLED ===');
-            console.log('Item ID:', itemId);
+            // Get current value
+            const qtyInput = document.getElementById('qty-' + itemId);
+            if (!qtyInput) return;
             
-            // Try multiple selectors to find the input
-            let qtyInput = document.getElementById('qty-' + itemId);
-            if (!qtyInput) {
-                qtyInput = document.querySelector(`input[id="qty-${itemId}"]`);
-            }
-            if (!qtyInput) {
-                qtyInput = document.querySelector(`.qty-input[id*="${itemId}"]`);
-            }
+            let newQty = parseInt(qtyInput.value) + 1;
             
-            if (!qtyInput) {
-                console.error('Input STILL not found for item:', itemId);
-                // List all inputs for debugging
-                const allInputs = document.querySelectorAll('input[type="number"]');
-                console.log('All number inputs found:', allInputs);
-                return;
-            }
+            // Update IMMEDIATELY with force
+            qtyInput.value = newQty;
+            qtyInput.defaultValue = newQty;
             
-            console.log('Found input:', qtyInput);
-            console.log('Input readonly?', qtyInput.readOnly);
-            console.log('Input disabled?', qtyInput.disabled);
-            
-            // Completely reset the input
-            qtyInput.removeAttribute('readonly');
-            qtyInput.removeAttribute('disabled');
-            qtyInput.readOnly = false;
-            qtyInput.disabled = false;
-            
-            let currentQty = parseInt(qtyInput.value) || 1;
-            console.log('BEFORE - Current qty:', currentQty);
-            
-            currentQty++;
-            console.log('AFTER calculation - New qty:', currentQty);
-            
-            // Try to set value and immediately verify
-            qtyInput.value = currentQty;
-            console.log('Set value, now checking:', qtyInput.value);
-            
-            // Force re-render by hiding and showing
+            // Force browser to re-render the input
             qtyInput.style.display = 'none';
-            setTimeout(() => {
-                qtyInput.style.display = '';
-                qtyInput.value = currentQty;
-                console.log('After force render:', qtyInput.value);
-            }, 1);
+            qtyInput.offsetHeight; // Trigger reflow
+            qtyInput.style.display = '';
             
-            // Try jQuery if available
-            if (window.jQuery) {
-                window.jQuery('#qty-' + itemId).val(currentQty);
-                console.log('jQuery set value to:', currentQty);
-            }
+            // Also update all matching inputs (mobile + desktop)
+            document.querySelectorAll(`#qty-${itemId}`).forEach(input => {
+                input.value = newQty;
+                input.defaultValue = newQty;
+            });
             
-            return false; // Prevent any default action
+            console.log('Updated qty to:', newQty);
+            
+            // Update totals and database
+            updateCartDisplay();
+            updateSingleItemAsync(itemId, newQty).catch(console.error);
         }
 
         function decreaseQty(itemId) {
-            console.log('=== DECREASE QTY CALLED ===');
-            console.log('Item ID:', itemId);
+            // Get current value
+            const qtyInput = document.getElementById('qty-' + itemId);
+            if (!qtyInput) return;
             
-            // Try multiple selectors to find the input
-            let qtyInput = document.getElementById('qty-' + itemId);
-            if (!qtyInput) {
-                qtyInput = document.querySelector(`input[id="qty-${itemId}"]`);
-            }
-            if (!qtyInput) {
-                qtyInput = document.querySelector(`.qty-input[id*="${itemId}"]`);
-            }
+            let currentQty = parseInt(qtyInput.value);
+            if (currentQty <= 1) return; // Don't go below 1
             
-            if (!qtyInput) {
-                console.error('Input STILL not found for item:', itemId);
-                // List all inputs for debugging
-                const allInputs = document.querySelectorAll('input[type="number"]');
-                console.log('All number inputs found:', allInputs);
-                return;
-            }
+            let newQty = currentQty - 1;
             
-            console.log('Found input:', qtyInput);
-            console.log('Input readonly?', qtyInput.readOnly);
-            console.log('Input disabled?', qtyInput.disabled);
+            // Update IMMEDIATELY with force
+            qtyInput.value = newQty;
+            qtyInput.defaultValue = newQty;
             
-            // Completely reset the input
-            qtyInput.removeAttribute('readonly');
-            qtyInput.removeAttribute('disabled');
-            qtyInput.readOnly = false;
-            qtyInput.disabled = false;
+            // Force browser to re-render the input
+            qtyInput.style.display = 'none';
+            qtyInput.offsetHeight; // Trigger reflow
+            qtyInput.style.display = '';
             
-            let currentQty = parseInt(qtyInput.value) || 1;
-            console.log('BEFORE - Current qty:', currentQty);
+            // Also update all matching inputs (mobile + desktop)
+            document.querySelectorAll(`#qty-${itemId}`).forEach(input => {
+                input.value = newQty;
+                input.defaultValue = newQty;
+            });
             
-            if (currentQty > 1) {
-                currentQty--;
-                console.log('AFTER calculation - New qty:', currentQty);
-                
-                // Try to set value and immediately verify
-                qtyInput.value = currentQty;
-                console.log('Set value, now checking:', qtyInput.value);
-                
-                // Force re-render by hiding and showing
-                qtyInput.style.display = 'none';
-                setTimeout(() => {
-                    qtyInput.style.display = '';
-                    qtyInput.value = currentQty;
-                    console.log('After force render:', qtyInput.value);
-                }, 1);
-                
-                // Try jQuery if available
-                if (window.jQuery) {
-                    window.jQuery('#qty-' + itemId).val(currentQty);
-                    console.log('jQuery set value to:', currentQty);
-                }
-            }
+            console.log('Updated qty to:', newQty);
             
-            return false; // Prevent any default action
+            // Update totals and database
+            updateCartDisplay();
+            updateSingleItemAsync(itemId, newQty).catch(console.error);
         }
 
         function updateCartDisplay() {
