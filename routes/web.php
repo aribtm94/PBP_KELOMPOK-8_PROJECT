@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\{
-    ProductController, CartController, CheckoutController, OrderController
+    ProductController, CartController, CheckoutController, OrderController, ProfileController
 };
 use App\Http\Controllers\Admin\{
     ProductAdminController, OrderAdminController
@@ -13,10 +13,10 @@ Route::get('/', [ProductController::class, 'index'])->name('home');
 Route::get('/products/{product}', [ProductController::class, 'show'])->name('products.show');
 
 // 2) Route untuk kategori
-Route::get('/kemeja', [ProductController::class, 'kemeja'])->name('kemeja');
-Route::get('/kaos', [ProductController::class, 'kaos'])->name('kaos');
-Route::get('/celana', [ProductController::class, 'celana'])->name('celana');
-Route::get('/jaket', [ProductController::class, 'jaket'])->name('jaket');
+Route::get('/T-Shirts', [ProductController::class, 'kemeja'])->name('kemeja');
+Route::get('/Shirts', [ProductController::class, 'kaos'])->name('kaos');
+Route::get('/Pants', [ProductController::class, 'pants'])->name('pants');
+Route::get('/Outerwear', [ProductController::class, 'jaket'])->name('jaket');
 Route::get('/shirt', [ProductController::class, 'shirt'])->name('shirt');
 Route::get('/dress', [ProductController::class, 'dress'])->name('dress');
 
@@ -51,5 +51,12 @@ Route::get('/dashboard', function () {
         ? redirect()->route('admin.products.index')
         : redirect()->route('home');
 })->middleware('auth')->name('dashboard');
+
+// Profile routes
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
 
 require __DIR__.'/auth.php';

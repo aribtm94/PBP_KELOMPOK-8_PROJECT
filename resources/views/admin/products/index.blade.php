@@ -85,9 +85,9 @@
       <td class="text-center" style="color: #E0E0E0;">{{ $p->is_active ? 'Ya' : 'Tidak' }}</td>
       <td class="text-center">
         <button onclick="editProduct({{ $p->id }}, '{{ addslashes($p->name) }}', {{ $p->category_id ?: 'null' }}, {{ $p->price }}, {{ $p->stock }}, {{ $p->is_active ? 1 : 0 }}, '{{ addslashes($p->description ?? '') }}')" class="border px-2 py-1 rounded mr-2" style="color: #E0E0E0; border-color: #E0E0E0;">Edit</button>
-        <form method="POST" action="{{ route('admin.products.destroy',$p) }}" onsubmit="return confirm('Hapus?')" class="inline">
+        <form method="POST" action="{{ route('admin.products.destroy',$p) }}" onsubmit="return confirmDelete('{{ $p->name }}')" class="inline">
           @csrf @method('DELETE')
-          <button class="border px-2 py-1 rounded" style="color: #E0E0E0; border-color: #E0E0E0;">Hapus</button>
+          <button type="submit" class="border px-2 py-1 rounded hover:bg-red-600 hover:text-white transition-colors" style="color: #E0E0E0; border-color: #E0E0E0;">Hapus</button>
         </form>
       </td>
     </tr>
@@ -139,5 +139,9 @@ function cancelEdit() {
     document.getElementById('editStock').value = '';
     document.getElementById('editIsActive').checked = false;
     document.getElementById('editDescription').value = '';
+}
+
+function confirmDelete(productName) {
+    return confirm('Apakah Anda yakin ingin menghapus produk "' + productName + '"?\n\nTindakan ini tidak dapat dibatalkan.');
 }
 </script>

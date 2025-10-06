@@ -16,16 +16,17 @@ class ProductController extends Controller
             
             // Map search terms to category routes
             $categoryMappings = [
-                'shirt' => '/shirt',
-                'kemeja' => '/kemeja', 
-                'kaos' => '/kaos',
-                't-shirt' => '/kaos',
-                'tshirt' => '/kaos',
-                'celana' => '/celana',
-                'pants' => '/celana',
-                'jaket' => '/jaket',
-                'jacket' => '/jaket',
-                'outerwear' => '/jaket'
+                'kemeja' => '/T-Shirts', 
+                'kaos' => '/Shirts',
+                't-shirt' => '/T-Shirts',
+                'tshirt' => '/T-Shirts',
+                'shirt' => '/Shirts',
+                'shirts' => '/Shirts',
+                'celana' => '/Pants',
+                'pants' => '/Pants',
+                'jaket' => '/Outerwear',
+                'jacket' => '/Outerwear',
+                'outerwear' => '/Outerwear'
             ];
             
             // Check if search term matches any category
@@ -42,13 +43,10 @@ class ProductController extends Controller
             if ($category) {
                 // Map category names to routes
                 $categoryRoutes = [
-                    'Kemeja' => '/kemeja',
-                    'Kaos' => '/kaos', 
-                    'Celana' => '/celana',
-                    'Jaket' => '/jaket',
-                    'Shirt' => '/shirt',
-                    'shirt' => '/shirt',
-                    'SHIRT' => '/shirt'
+                    'T-Shirts' => '/T-Shirts',
+                    'Shirts' => '/Shirts',
+                    'Pants' => '/Pants',
+                    'Outerwear' => '/Outerwear'
                 ];
                 
                 if (isset($categoryRoutes[$category->name])) {
@@ -102,60 +100,43 @@ class ProductController extends Controller
     // Method untuk kategori spesifik
     public function kemeja(Request $r)
     {
-        return $this->getProductsByCategory('Kemeja', $r);
+        return $this->getProductsByCategory('T-Shirts', $r, 'products.tshirts');
     }
 
     public function kaos(Request $r)
     {
-        return $this->getProductsByCategory('Kaos', $r);
+        return $this->getProductsByCategory('Shirts', $r, 'products.shirts');
     }
 
     public function celana(Request $r)
     {
-        return $this->getProductsByCategory('Celana', $r);
+        return $this->getProductsByCategory('Pants', $r, 'products.pants');
     }
 
     public function jaket(Request $r)
     {
-        return $this->getProductsByCategory('Jaket', $r);
+        return $this->getProductsByCategory('Outerwear', $r, 'products.outerwear');
     }
 
     public function shirt(Request $r)
     {
-        // Try different variations of "shirt" category name
-        $possibleNames = ['Shirt', 'shirt', 'SHIRT', 'Kemeja'];
-        $category = null;
-        
-        foreach ($possibleNames as $name) {
-            $category = Category::where('name', $name)->first();
-            if ($category) break;
-        }
-        
-        if (!$category) {
-            // If no shirt category found, show debug info
-            $categories = Category::all();
-            $products = collect(); // empty collection
-            return view('products.index', compact('products', 'categories'))
-                   ->with('debugMessage', 'No Shirt category found. Available categories: ' . $categories->pluck('name')->join(', '));
-        }
-        
-        $q = Product::query()->with('category')->where('is_active', true)
-                    ->where('category_id', $category->id);
+        // Redirect to /Shirts (kaos method)
+        return redirect()->route('kaos');
+    }
 
-        if ($r->filled('search')) {
-            $term = (string) $r->string('search');
-            $q->where('name', 'like', "%{$term}%");
-        }
+    public function pants(Request $r)
+    {
+        return $this->getProductsByCategory('Pants', $r, 'products.pants');
+    }
 
-        $products = $q->latest()->paginate(12)->withQueryString();
-        $categories = Category::orderBy('name')->get();
-
-        return view('products.index', compact('products', 'categories'))
-               ->with('selectedCategory', $category);
+    public function dress(Request $r)
+    {
+        // Dress category was removed, redirect to home
+        return redirect()->route('home');
     }
 
     // Helper method untuk filtering berdasarkan kategori
-    private function getProductsByCategory($categoryName, Request $r)
+    private function getProductsByCategory($categoryName, Request $r, $viewName = 'products.index')
     {
         $category = Category::where('name', $categoryName)->firstOrFail();
         
@@ -170,7 +151,7 @@ class ProductController extends Controller
         $products = $q->latest()->paginate(12)->withQueryString();
         $categories = Category::orderBy('name')->get();
 
-        return view('products.index', compact('products', 'categories'))
+        return view($viewName, compact('products', 'categories'))
                ->with('selectedCategory', $category);
     }
 }

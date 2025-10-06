@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
   <title>{{ config('app.name') }}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,6 +16,84 @@
       font-weight: normal;
       font-style: normal;
       font-display: swap;
+    }
+
+    /* Animation keyframes */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideInLeft {
+      from {
+        opacity: 0;
+        transform: translateX(-30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    /* Animation classes */
+    .animate-fade-in {
+      animation: fadeInUp 0.6s ease-out forwards;
+    }
+
+    .animate-fade-in-delay {
+      animation: fadeInUp 0.6s ease-out 0.2s forwards;
+      opacity: 0;
+    }
+
+    .animate-slide-left {
+      animation: slideInLeft 0.6s ease-out forwards;
+    }
+
+    /* Hover effects */
+    .hover-glow:hover {
+      box-shadow: 0 0 20px rgba(163, 133, 96, 0.5);
+      transform: translateY(-2px);
+    }
+
+    /* Gradient text */
+    .gradient-text {
+      background: linear-gradient(135deg, #E0E0E0 0%, #A38560 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #16302B;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #A38560;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #8B7355;
     }
   </style>
   @vite(['resources/css/app.css','resources/js/app.js'])
@@ -40,51 +119,110 @@
             </a>
         </div>
 
-        <!-- Search Bar -->
-        <div class="hidden lg:flex flex-shrink-0 ml-8">
-            <form method="GET" action="{{ route('home') }}" class="relative flex items-center">
-                <input 
-                    type="text" 
-                    name="search" 
-                    placeholder="Cari produk..." 
-                    value="{{ request('search') }}"
-                    class="px-3 py-2 pr-12 rounded-full border-none focus:outline-none focus:ring-2 focus:ring-white/50 text-gray-800 w-80 xl:w-96 bg-[#E0E0E0]"
-                >
-                <button type="submit" class="absolute right-2 p-2 hover:opacity-75">
-                    <img src="{{ asset('images/Search-Icon.png') }}" alt="Search" class="w-5 h-5">
-                </button>
-            </form>
-        </div>
+        <!-- Search Bar - Only for Users and Guests -->
+        @auth
+            @if(auth()->user()->role !== 'admin')
+                <div class="hidden lg:flex flex-shrink-0 ml-8">
+                    <form method="GET" action="{{ route('home') }}" class="relative flex items-center">
+                        <input 
+                            type="text" 
+                            name="search" 
+                            placeholder="Cari produk..." 
+                            value="{{ request('search') }}"
+                            class="px-3 py-2 pr-12 rounded-full border-none focus:outline-none focus:ring-2 focus:ring-white/50 text-gray-800 w-80 xl:w-96 bg-[#E0E0E0]"
+                        >
+                        <button type="submit" class="absolute right-2 p-2 hover:opacity-75">
+                            <img src="{{ asset('images/Search-Icon.png') }}" alt="Search" class="w-5 h-5">
+                        </button>
+                    </form>
+                </div>
+            @endif
+        @else
+            <div class="hidden lg:flex flex-shrink-0 ml-8">
+                <form method="GET" action="{{ route('home') }}" class="relative flex items-center">
+                    <input 
+                        type="text" 
+                        name="search" 
+                        placeholder="Cari produk..." 
+                        value="{{ request('search') }}"
+                        class="px-3 py-2 pr-12 rounded-full border-none focus:outline-none focus:ring-2 focus:ring-white/50 text-gray-800 w-80 xl:w-96 bg-[#E0E0E0]"
+                    >
+                    <button type="submit" class="absolute right-2 p-2 hover:opacity-75">
+                        <img src="{{ asset('images/Search-Icon.png') }}" alt="Search" class="w-5 h-5">
+                    </button>
+                </form>
+            </div>
+        @endauth
 
-        <!-- Link Produk -->
-        <div class="hidden xl:flex gap-16">
-            <a href="{{ route('kemeja') }}" class="{{ Route::currentRouteName() == 'kemeja' ? 'text-[#E0E0E0]' : 'text-[#390517]' }} font-bold hover:opacity-75 px-3 transition-opacity">Shirt</a>
-            <a href="{{ route('kaos') }}" class="{{ Route::currentRouteName() == 'kaos' ? 'text-[#E0E0E0]' : 'text-[#390517]' }} font-bold hover:opacity-75 px-3 transition-opacity">T-Shirt</a>
-            <a href="{{ route('celana') }}" class="{{ Route::currentRouteName() == 'celana' ? 'text-[#E0E0E0]' : 'text-[#390517]' }} font-bold hover:opacity-75 px-3 transition-opacity">Pants</a>
-            <a href="{{ route('jaket') }}" class="{{ Route::currentRouteName() == 'jaket' ? 'text-[#E0E0E0]' : 'text-[#390517]' }} font-bold hover:opacity-75 px-3 transition-opacity">Outerwear</a>
-        </div>
+        <!-- Navigation Links - Different for Admin and User -->
+        @auth
+            @if(auth()->user()->role === 'admin')
+                <!-- Admin Navigation -->
+                <div class="hidden xl:flex gap-16">
+                    <a href="{{ route('admin.products.index') }}" class="{{ request()->routeIs('admin.products.*') ? 'text-[#E0E0E0]' : 'text-[#390517]' }} font-bold hover:opacity-75 px-3 transition-opacity">
+                        📦 Kelola Produk
+                    </a>
+                    <a href="{{ route('admin.orders.index') }}" class="{{ request()->routeIs('admin.orders.*') ? 'text-[#E0E0E0]' : 'text-[#390517]' }} font-bold hover:opacity-75 px-3 transition-opacity">
+                        📋 Kelola Pesanan
+                    </a>
+                    <a href="{{ route('home') }}" class="text-[#390517] font-bold hover:opacity-75 px-3 transition-opacity">
+                        🏠 Lihat Toko
+                    </a>
+                </div>
+            @else
+                <!-- User Navigation -->
+                <div class="hidden xl:flex gap-16">
+                    <a href="{{ route('kemeja') }}" class="{{ Route::currentRouteName() == 'kemeja' ? 'text-[#E0E0E0]' : 'text-[#390517]' }} font-bold hover:opacity-75 px-3 transition-opacity">T-Shirts</a>
+                    <a href="{{ route('kaos') }}" class="{{ Route::currentRouteName() == 'kaos' ? 'text-[#E0E0E0]' : 'text-[#390517]' }} font-bold hover:opacity-75 px-3 transition-opacity">Shirts</a>
+                    <a href="{{ route('pants') }}" class="{{ Route::currentRouteName() == 'pants' ? 'text-[#E0E0E0]' : 'text-[#390517]' }} font-bold hover:opacity-75 px-3 transition-opacity">Pants</a>
+                    <a href="{{ route('jaket') }}" class="{{ Route::currentRouteName() == 'jaket' ? 'text-[#E0E0E0]' : 'text-[#390517]' }} font-bold hover:opacity-75 px-3 transition-opacity">Outerwear</a>
+                </div>
+            @endif
+        @else
+            <!-- Guest Navigation -->
+            <div class="hidden xl:flex gap-16">
+                <a href="{{ route('kemeja') }}" class="{{ Route::currentRouteName() == 'kemeja' ? 'text-[#E0E0E0]' : 'text-[#390517]' }} font-bold hover:opacity-75 px-3 transition-opacity">T-Shirts</a>
+                <a href="{{ route('kaos') }}" class="{{ Route::currentRouteName() == 'kaos' ? 'text-[#E0E0E0]' : 'text-[#390517]' }} font-bold hover:opacity-75 px-3 transition-opacity">Shirts</a>
+                <a href="{{ route('pants') }}" class="{{ Route::currentRouteName() == 'pants' ? 'text-[#E0E0E0]' : 'text-[#390517]' }} font-bold hover:opacity-75 px-3 transition-opacity">Pants</a>
+                <a href="{{ route('jaket') }}" class="{{ Route::currentRouteName() == 'jaket' ? 'text-[#E0E0E0]' : 'text-[#390517]' }} font-bold hover:opacity-75 px-3 transition-opacity">Outerwear</a>
+            </div>
+        @endauth
 
         <!-- Mobile Search & User Authentication -->
         <div class="flex gap-2 sm:gap-4 items-center pr-3 sm:pr-6 flex-shrink-0">
-            <!-- Mobile Search Icon Only -->
-            <button id="mobile-search-toggle" class="lg:hidden text-[#390517] hover:opacity-75 flex-shrink-0">
-                <img src="{{ asset('images/Search-Icon.png') }}" alt="Search" class="w-4 h-4 sm:w-5 sm:h-5">
-            </button>
+            @auth
+                @if(auth()->user()->role !== 'admin')
+                    <!-- Mobile Search Icon Only -->
+                    <button id="mobile-search-toggle" class="lg:hidden text-[#390517] hover:opacity-75 flex-shrink-0">
+                        <img src="{{ asset('images/Search-Icon.png') }}" alt="Search" class="w-4 h-4 sm:w-5 sm:h-5">
+                    </button>
 
-            <!-- Garis Vertikal - Mobile Search -->
-            <div class="lg:hidden h-6 sm:h-8 w-px bg-[#390517]/30 flex-shrink-0"></div>
+                    <!-- Garis Vertikal - Mobile Search -->
+                    <div class="lg:hidden h-6 sm:h-8 w-px bg-[#390517]/30 flex-shrink-0"></div>
+                @endif
+            @else
+                <!-- Mobile Search Icon Only -->
+                <button id="mobile-search-toggle" class="lg:hidden text-[#390517] hover:opacity-75 flex-shrink-0">
+                    <img src="{{ asset('images/Search-Icon.png') }}" alt="Search" class="w-4 h-4 sm:w-5 sm:h-5">
+                </button>
+
+                <!-- Garis Vertikal - Mobile Search -->
+                <div class="lg:hidden h-6 sm:h-8 w-px bg-[#390517]/30 flex-shrink-0"></div>
+            @endauth
 
             @auth
-                <!-- Cart Icon -->
-                <a href="{{ route('cart.index') }}" class="text-white hover:opacity-75 flex items-center flex-shrink-0">
-                    <img src="{{ asset('images/cart-icon.png') }}" alt="Cart" class="w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0">
-                    @if(auth()->user()->cart?->items()->sum('qty'))
-                        <span class="ml-1 bg-red-500 text-white text-xs rounded-full px-1 min-w-[16px] text-center">{{ auth()->user()->cart->items()->sum('qty') }}</span>
-                    @endif
-                </a>
+                @if(auth()->user()->role === 'user')
+                    <!-- Cart Icon - Only for Users -->
+                    <a href="{{ route('cart.index') }}" class="text-white hover:opacity-75 flex items-center flex-shrink-0">
+                        <img src="{{ asset('images/cart-icon.png') }}" alt="Cart" class="w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0">
+                        @if(auth()->user()->cart?->items()->sum('qty'))
+                            <span class="ml-1 bg-red-500 text-white text-xs rounded-full px-1 min-w-[16px] text-center">{{ auth()->user()->cart->items()->sum('qty') }}</span>
+                        @endif
+                    </a>
 
-                <!-- Garis Vertikal -->
-                <div class="h-6 sm:h-8 w-px bg-[#390517]/30 flex-shrink-0"></div>
+                    <!-- Garis Vertikal -->
+                    <div class="h-6 sm:h-8 w-px bg-[#390517]/30 flex-shrink-0"></div>
+                @endif
 
                 <!-- Profile Icon -->
                 <div class="relative flex-shrink-0">
@@ -104,6 +242,7 @@
                     <!-- Dropdown Menu -->
                     <div id="profile-dropdown" class="absolute right-0 top-full mt-2 w-48 bg-white rounded-md shadow-lg hidden z-50" style="transition: none !important; animation: none !important;">
                         <div class="py-2" style="transition: none !important; animation: none !important;">
+                            <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-gray-800" style="transition: none !important; transform: none !important; animation: none !important; background-color: transparent !important;">Profile</a>
                             @if(auth()->user()->role === 'user')
                                 <a href="{{ route('orders.index') }}" class="block px-4 py-2 text-gray-800" style="transition: none !important; transform: none !important; animation: none !important; background-color: transparent !important;">Pesanan Saya</a>
                             @endif
@@ -134,6 +273,26 @@
                             }
                         });
                     }
+
+                    // Setup CSRF token for AJAX requests
+                    const token = document.querySelector('meta[name="csrf-token"]');
+                    if (token) {
+                        window.Laravel = {
+                            csrfToken: token.content
+                        };
+                    }
+
+                    // Handle logout form submission with fresh CSRF token
+                    const logoutForm = document.querySelector('form[action*="logout"]');
+                    if (logoutForm) {
+                        logoutForm.addEventListener('submit', function(e) {
+                            // Get fresh CSRF token if needed
+                            const csrfInput = this.querySelector('input[name="_token"]');
+                            if (csrfInput && token) {
+                                csrfInput.value = token.content;
+                            }
+                        });
+                    }
                 });
                 </script>
             @else
@@ -148,10 +307,26 @@
     <div id="mobile-menu" class="hidden xl:hidden bg-[#A38560] mx-6 rounded-b-3xl -mt-1">
         <div class="px-6 py-4 border-t border-[#390517]/20">
             <div class="flex flex-col gap-3">
-                <a href="{{ route('kemeja') }}" class="{{ Route::currentRouteName() == 'kemeja' ? 'text-[#E0E0E0]' : 'text-[#390517]' }} font-bold hover:opacity-75 py-2 transition-opacity">Kemeja</a>
-                <a href="{{ route('kaos') }}" class="{{ Route::currentRouteName() == 'kaos' ? 'text-[#E0E0E0]' : 'text-[#390517]' }} font-bold hover:opacity-75 py-2 transition-opacity">Kaos</a>
-                <a href="{{ route('celana') }}" class="{{ Route::currentRouteName() == 'celana' ? 'text-[#E0E0E0]' : 'text-[#390517]' }} font-bold hover:opacity-75 py-2 transition-opacity">Celana</a>
-                <a href="{{ route('jaket') }}" class="{{ Route::currentRouteName() == 'jaket' ? 'text-[#E0E0E0]' : 'text-[#390517]' }} font-bold hover:opacity-75 py-2 transition-opacity">Jaket</a>
+                @auth
+                    @if(auth()->user()->role === 'admin')
+                        <!-- Admin Mobile Navigation -->
+                        <a href="{{ route('admin.products.index') }}" class="{{ request()->routeIs('admin.products.*') ? 'text-[#E0E0E0]' : 'text-[#390517]' }} font-bold hover:opacity-75 py-2 transition-opacity">📦 Kelola Produk</a>
+                        <a href="{{ route('admin.orders.index') }}" class="{{ request()->routeIs('admin.orders.*') ? 'text-[#E0E0E0]' : 'text-[#390517]' }} font-bold hover:opacity-75 py-2 transition-opacity">📋 Kelola Pesanan</a>
+                        <a href="{{ route('home') }}" class="text-[#390517] font-bold hover:opacity-75 py-2 transition-opacity">🏠 Lihat Toko</a>
+                    @else
+                        <!-- User Mobile Navigation -->
+                        <a href="{{ route('kemeja') }}" class="{{ Route::currentRouteName() == 'kemeja' ? 'text-[#E0E0E0]' : 'text-[#390517]' }} font-bold hover:opacity-75 py-2 transition-opacity">T-Shirts</a>
+                        <a href="{{ route('kaos') }}" class="{{ Route::currentRouteName() == 'kaos' ? 'text-[#E0E0E0]' : 'text-[#390517]' }} font-bold hover:opacity-75 py-2 transition-opacity">Shirts</a>
+                        <a href="{{ route('pants') }}" class="{{ Route::currentRouteName() == 'pants' ? 'text-[#E0E0E0]' : 'text-[#390517]' }} font-bold hover:opacity-75 py-2 transition-opacity">Pants</a>
+                        <a href="{{ route('jaket') }}" class="{{ Route::currentRouteName() == 'jaket' ? 'text-[#E0E0E0]' : 'text-[#390517]' }} font-bold hover:opacity-75 py-2 transition-opacity">Outerwear</a>
+                    @endif
+                @else
+                    <!-- Guest Mobile Navigation -->
+                    <a href="{{ route('kemeja') }}" class="{{ Route::currentRouteName() == 'kemeja' ? 'text-[#E0E0E0]' : 'text-[#390517]' }} font-bold hover:opacity-75 py-2 transition-opacity">T-Shirts</a>
+                    <a href="{{ route('kaos') }}" class="{{ Route::currentRouteName() == 'kaos' ? 'text-[#E0E0E0]' : 'text-[#390517]' }} font-bold hover:opacity-75 py-2 transition-opacity">Shirts</a>
+                    <a href="{{ route('pants') }}" class="{{ Route::currentRouteName() == 'pants' ? 'text-[#E0E0E0]' : 'text-[#390517]' }} font-bold hover:opacity-75 py-2 transition-opacity">Pants</a>
+                    <a href="{{ route('jaket') }}" class="{{ Route::currentRouteName() == 'jaket' ? 'text-[#E0E0E0]' : 'text-[#390517]' }} font-bold hover:opacity-75 py-2 transition-opacity">Outerwear</a>
+                @endauth
             </div>
         </div>
     </div>

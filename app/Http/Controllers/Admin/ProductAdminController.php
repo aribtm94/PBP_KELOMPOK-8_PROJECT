@@ -37,9 +37,14 @@ class ProductAdminController extends Controller
         $data['is_active'] = $r->boolean('is_active'); // true/false
         unset($data['image']); // jangan ikut mass-assign
 
-        Product::create($data);
+        // Debug log
+        \Log::info('Creating product with data:', $data);
 
-        return back()->with('success','Produk ditambahkan.');
+        $product = Product::create($data);
+
+        \Log::info('Product created with ID: ' . $product->id);
+
+        return back()->with('success','Produk berhasil ditambahkan. ID: ' . $product->id);
     }
 
     public function update(Request $r, Product $product)
@@ -67,7 +72,18 @@ class ProductAdminController extends Controller
 
     public function destroy(Product $product)
     {
+        // Debug log
+        \Log::info('Attempting to delete product ID: ' . $product->id . ', Name: ' . $product->name);
+        
+        // Delete associated image file if exists
+        if ($product->image_path) {
+            \Storage::disk('public')->delete($product->image_path);
+        }
+        
         $product->delete();
-        return back()->with('success','Produk dihapus.');
+        
+        \Log::info('Product deleted successfully');
+        
+        return back()->with('success','Produk "' . $product->name . '" berhasil dihapus.');
     }
 }

@@ -44,7 +44,7 @@
 
 @if(isset($selectedCategory))
 <div class="container mx-auto px-6 py-8">
-    <h2 class="text-3xl font-bold mb-6">{{ $selectedCategory->name }} Products</h2>
+    <h2 class="text-3xl font-bold mb-6" style="color: #E0E0E0;">{{ $selectedCategory->name }} Products</h2>
     
     @if($products->count() > 0)
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -185,7 +185,7 @@ $productCount = $displayProducts->count();
         </div>
         <!-- View All Button -->
     <div class="text-center mb-8">
-      <a href="/kemeja" class="bg-[#A38560] hover:bg-[#8B7355] text-white font-semibold py-3 px-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 inline-block">
+      <a href="{{ route('kaos') }}" class="bg-[#A38560] hover:bg-[#8B7355] text-white font-semibold py-3 px-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 inline-block">
         view all products
       </a>
     </div>
@@ -237,7 +237,7 @@ $productCount = $displayProducts->count();
         </div>
         <!-- View All Button -->
       <div class="text-center mb-8">
-        <a href="/kaos" class="bg-[#A38560] hover:bg-[#8B7355] text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 inline-block">
+        <a href="{{ route('kemeja') }}" class="bg-[#A38560] hover:bg-[#8B7355] text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 inline-block">
           view all products
         </a>
       </div>
@@ -275,7 +275,7 @@ $productCount = $displayProducts->count();
         </div>
         <!-- View All Button -->
       <div class="text-center mb-8">
-        <a href="/celana" class="bg-[#A38560] hover:bg-[#8B7355] text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 inline-block">
+        <a href="{{ route('pants') }}" class="bg-[#A38560] hover:bg-[#8B7355] text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 inline-block">
           view all products
         </a>
       </div>
@@ -329,7 +329,7 @@ $productCount = $displayProducts->count();
         </div>
         <!-- View All Button -->
       <div class="text-center mb-8">
-        <a href="/jaket" class="bg-[#A38560] hover:bg-[#8B7355] text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 inline-block">
+        <a href="{{ route('jaket') }}" class="bg-[#A38560] hover:bg-[#8B7355] text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 inline-block">
           view all products
         </a>
       </div>
