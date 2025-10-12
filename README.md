@@ -83,9 +83,6 @@ npm run dev
 php artisan serve
 ```
 
-9) Akses aplikasi
-- Buka: http://127.0.0.1:8000
-
 Catatan:
 - Proses `npm run dev` akan menjalankan Vite dev server (hot reload). Biarkan terminal ini aktif saat pengembangan.
 - Jika ingin build untuk produksi, gunakan `npm run build`.
