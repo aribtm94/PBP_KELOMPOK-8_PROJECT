@@ -30,7 +30,7 @@ mysql --version
 
 ---
 
-## Setup dan Menjalankan 
+## Setup
 
 1) Clone repository
 ```bash
