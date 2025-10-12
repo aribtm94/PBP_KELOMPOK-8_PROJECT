@@ -170,6 +170,5 @@ Jika belum ditentukan, tambahkan lisensi yang diinginkan pada file LICENSE. Misa
 5. `php artisan migrate` (opsional `db:seed`)
 6. `npm install` lalu `npm run dev`
 7. `php artisan serve`
-8. Buka http://127.0.0.1:8000
 
 Jika Anda ingin, kami bisa membantu membuatkan PR untuk menambahkan README ini ke repository.
