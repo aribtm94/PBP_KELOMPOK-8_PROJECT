@@ -28,13 +28,20 @@
 </div>
 
 <h2 class="font-semibold mb-2" style="color: #E0E0E0;">Item Pesanan</h2>
-<table class="w-full border rounded" style="border-color: #E0E0E0;">
+<table class="w-full border rounded overflow-hidden" style="border-color: #E0E0E0;">
   <tr class="bg-gray-50">
-    <th class="p-2 text-left" style="color: #E0E0E0;">Produk</th><th style="color: #E0E0E0;">Qty</th><th style="color: #E0E0E0;">Harga</th><th style="color: #E0E0E0;">Subtotal</th>
+    <th class="p-2 text-left" style="color: #E0E0E0;">Produk</th>
+    <th style="color: #E0E0E0;">Ukuran</th>
+    <th style="color: #E0E0E0;">Qty</th>
+    <th style="color: #E0E0E0;">Harga</th>
+    <th style="color: #E0E0E0;">Subtotal</th>
   </tr>
   @foreach($order->items as $i)
     <tr class="border-t" style="border-color: #E0E0E0;">
       <td class="p-2" style="color: #E0E0E0;">{{ $i->product->name }}</td>
+      <td class="text-center p-2" style="color: #E0E0E0;">
+        <span class="font-semibold">{{ strtoupper($i->size ?? 'N/A') }}</span>
+      </td>
       <td class="text-center" style="color: #E0E0E0;">{{ $i->qty }}</td>
       <td class="text-center" style="color: #E0E0E0;">Rp {{ number_format($i->price,0,',','.') }}</td>
       <td class="text-center" style="color: #E0E0E0;">Rp {{ number_format($i->subtotal,0,',','.') }}</td>

@@ -8,6 +8,8 @@ use App\Models\{User,Cart,Category,Product};
 
 class DemoSeeder extends Seeder {
     public function run(): void {
+        // PERINGATAN: Seeder ini akan menambah data default
+        // Jangan gunakan migrate:fresh jika ada data penting!
         $admin = User::firstOrCreate(
             ['email'=>'admin@gayakuid.local'],
             ['name'=>'Admin','password'=>Hash::make('password'),'role'=>'admin']

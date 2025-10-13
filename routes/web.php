@@ -27,8 +27,9 @@ Route::middleware(['auth','useronly'])->group(function () {
     Route::patch('/cart/item/{item}', [CartController::class,'updateQty'])->name('cart.update');
     Route::delete('/cart/item/{item}', [CartController::class,'remove'])->name('cart.remove');
 
-    Route::get('/checkout', [CheckoutController::class,'show'])->name('checkout.show');
-    Route::post('/checkout', [CheckoutController::class,'store'])->name('checkout.store');
+
+    Route::match(['get', 'post'], '/checkout', [CheckoutController::class,'show'])->name('checkout.show');
+    Route::post('/checkout/store', [CheckoutController::class,'store'])->name('checkout.store');
 
     Route::get('/orders', [OrderController::class,'index'])->name('orders.index');
     Route::get('/orders/{order}', [OrderController::class,'show'])->name('orders.show');
