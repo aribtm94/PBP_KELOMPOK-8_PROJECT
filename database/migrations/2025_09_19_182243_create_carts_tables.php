@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        // ===== ORDERS TABLE =====
+
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
@@ -22,7 +22,6 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        // ===== ORDER ITEMS TABLE =====
         Schema::create('order_items', function (Blueprint $table) {
             $table->id();
             $table->foreignId('order_id')->constrained('orders')->cascadeOnDelete();
