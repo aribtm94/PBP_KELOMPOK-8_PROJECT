@@ -2,82 +2,94 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\{Cart, CartItem, Product};
+use App\Models\Order;
+use App\Models\OrderItem;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
-class CartController extends Controller
+class CheckoutController extends Controller
 {
-    public function __construct()
+    public function __construct() { $this->middleware('auth'); }
+
+    public function show(Request $request)
     {
-        $this->middleware('auth');
+        // Check if user just completed an order and is trying to go back
+        if (session('order_completed')) {
+            $orderId = session('completed_order_id');
+            session()->forget(['order_completed', 'completed_order_id']);
+            return redirect()->route('orders.show', $orderId)
+                ->with('info', 'Pesanan sudah selesai. Tidak bisa kembali ke checkout.');
+        }
+        
+        $cart = auth()->user()->cart;
+        if (!$cart || $cart->items->isEmpty()) {
+            return redirect('/')->with('error', 'Keranjang kosong');
+        }
+        
+        // Calculate subtotal
+        $subtotal = $cart->items->sum(function ($item) {
+            return $item->qty * $item->product->price;
+        });
+        
+        return view('checkout.show', compact('cart', 'subtotal'));
     }
 
-    protected function userCart(): Cart
-    {
-        return auth()->user()->cart ?? Cart::create(['user_id' => auth()->id()]);
-    }
-
-    public function index()
-    {
-        $cart = $this->userCart()->load('items.product');
-        return view('cart.index', compact('cart'));
-    }
-
-    public function add(Request $r, Product $product)
+    public function store(Request $r)
     {
         $data = $r->validate([
-            'qty' => 'required|integer|min:1',
-            'size' => 'required|string'
+            'receiver_name' => 'required|string|max:100',
+            'address_text'  => 'required|string|max:500',
+            'phone'         => 'nullable|string|max:20',
         ]);
 
-        $cart = $this->userCart();
-        
-        // Find existing item with same product and size
-        $item = $cart->items()->where([
-            'product_id' => $product->id,
-            'size' => $data['size']
-        ])->first();
+        $user = auth()->user();
+        $cart = $user->cart()->with('items.product')->firstOrFail();
+        if ($cart->items->isEmpty()) return back()->with('error', 'Keranjang kosong');
 
-        if ($item) {
-            // Update existing item quantity
-            $item->qty = $item->qty + $data['qty'];
-        } else {
-            // Create new item
-            $item = new CartItem([
-                'cart_id' => $cart->id,
-                'product_id' => $product->id,
-                'size' => $data['size'],
-                'qty' => $data['qty']
+        // Get voucher data from session if not in form data (with safe array access)
+        $order = null;
+
+        DB::transaction(function () use ($user, $cart, $data, &$order) {
+            $subtotal = 0;
+            foreach ($cart->items as $i) {
+                if ($i->qty > $i->product->stock) {
+                    throw new \RuntimeException('Stok tidak cukup');
+                }
+                $subtotal += $i->qty * $i->product->price;
+            }
+
+            $finalTotal = $subtotal;
+
+            $order = Order::create($data + [
+                'user_id' => $user->id,
+                'subtotal' => $subtotal,
+                'total'   => $finalTotal,
+                'status'  => 'baru',
             ]);
-        }
 
-        if ($item->qty > $product->stock) {
-            return back()->with('error', 'Qty melebihi stok.');
-        }
+            foreach ($cart->items as $i) {
+                OrderItem::create([
+                    'order_id'  => $order->id,
+                    'product_id'=> $i->product_id,
+                    'price'     => $i->product->price,
+                    'qty'       => $i->qty,
+                    'subtotal'  => $i->qty * $i->product->price,
+                    'size'      => $i->size,
+                ]);
+                $i->product->decrement('stock', $i->qty);
+            }
 
-        $item->save();
-        return back()->with('success', 'Ditambahkan ke keranjang.');
+            $cart->items()->delete();
+        });
+
+        // Clear checkout-related session data after successful order
+        session()->forget(['checkout_data', 'cart_total']);
+        
+        // Mark that order has been completed to prevent back navigation
+        session(['order_completed' => true, 'completed_order_id' => $order->id]);
+
+        return redirect()->route('orders.show', $order)
+            ->with('success', 'Pesanan berhasil dibuat!')
+            ->with('prevent_back', true);
     }
-
-    public function updateQty(Request $r, CartItem $item)
-    {
-        abort_unless($item->cart->user_id === auth()->id(), 403);
-
-        $data = $r->validate(['qty' => 'required|integer|min:1']);
-        if ($data['qty'] > $item->product->stock) {
-            return back()->with('error', 'Qty melebihi stok.');
-        }
-
-        $item->update(['qty' => $data['qty']]);
-        return back()->with('success', 'Jumlah diperbarui.');
-    }
-
-    public function remove(CartItem $item)
-    {
-        abort_unless($item->cart->user_id === auth()->id(), 403);
-        $item->delete();
-        return back()->with('success', 'Item dihapus.');
-    }
-
-
 }
