@@ -17,13 +17,11 @@ class OrderItem extends Model
         'subtotal',
     ];
 
-    // Relasi ke order
     public function order()
     {
         return $this->belongsTo(Order::class);
     }
 
-    // Relasi ke produk
     public function product()
     {
         return $this->belongsTo(Product::class);
