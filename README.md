@@ -95,14 +95,9 @@ Catatan:
 php artisan optimize:clear
 ```
 
-- Membuat symbolic link storage (jika aplikasi perlu akses file upload):
+- Membuat symbolic link storage:
 ```bash
 php artisan storage:link
-```
-
-- Menjalankan test (jika tersedia):
-```bash
-php artisan test
 ```
 
 ---
