@@ -11,9 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('orders', function (Blueprint $table) {
-            //
-        });
+        // Rename orders.address_text -> orders.receiver_address only if the source column exists
+        if (Schema::hasTable('orders') && Schema::hasColumn('orders', 'address_text') && !Schema::hasColumn('orders', 'receiver_address')) {
+            Schema::table('orders', function (Blueprint $table) {
+                $table->renameColumn('address_text', 'receiver_address');
+            });
+        }
     }
 
     /**
@@ -21,8 +24,11 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('orders', function (Blueprint $table) {
-            //
-        });
+        // Rollback rename if applicable
+        if (Schema::hasTable('orders') && Schema::hasColumn('orders', 'receiver_address') && !Schema::hasColumn('orders', 'address_text')) {
+            Schema::table('orders', function (Blueprint $table) {
+                $table->renameColumn('receiver_address', 'address_text');
+            });
+        }
     }
 };

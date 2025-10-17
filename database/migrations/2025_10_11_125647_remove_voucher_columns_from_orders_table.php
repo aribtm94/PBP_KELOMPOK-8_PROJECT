@@ -23,7 +23,10 @@ return new class extends Migration
     {
         Schema::table('orders', function (Blueprint $table) {
             $table->string('voucher_code')->nullable();
-            $table->decimal('discount_amount', 10, 2)->default(0);
+            // Match the original type from 2025_09_19_182244_add_voucher_to_orders_table
+            $table->integer('discount_amount')->default(0);
+            // subtotal was also added in that migration, but removed later by 2025_10_14_220753; we intentionally
+            // do not re-add it here to avoid conflicting with later migrations.
         });
     }
 };

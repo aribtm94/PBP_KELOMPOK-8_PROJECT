@@ -11,9 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('cart_and_order_items', function (Blueprint $table) {
-            //
-        });
+        // This migration was initially empty. Implement safe conditional drops for legacy 'color' columns.
+        if (Schema::hasTable('cart_items') && Schema::hasColumn('cart_items', 'color')) {
+            Schema::table('cart_items', function (Blueprint $table) {
+                $table->dropColumn('color');
+            });
+        }
+        if (Schema::hasTable('order_items') && Schema::hasColumn('order_items', 'color')) {
+            Schema::table('order_items', function (Blueprint $table) {
+                $table->dropColumn('color');
+            });
+        }
     }
 
     /**
@@ -21,8 +29,16 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('cart_and_order_items', function (Blueprint $table) {
-            //
-        });
+        // Re-add columns for rollback only if missing
+        if (Schema::hasTable('cart_items') && !Schema::hasColumn('cart_items', 'color')) {
+            Schema::table('cart_items', function (Blueprint $table) {
+                $table->string('color')->nullable();
+            });
+        }
+        if (Schema::hasTable('order_items') && !Schema::hasColumn('order_items', 'color')) {
+            Schema::table('order_items', function (Blueprint $table) {
+                $table->string('color')->nullable();
+            });
+        }
     }
 };
