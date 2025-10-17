@@ -6,6 +6,7 @@ use App\Http\Requests\ProfileUpdateRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 
@@ -26,7 +27,20 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        $data = $request->validated();
+
+        // Handle avatar upload like admin
+        if ($request->hasFile('avatar')) {
+            // remove old file if exists
+            if ($request->user()->avatar_path) {
+                Storage::disk('public')->delete($request->user()->avatar_path);
+            }
+            $data['avatar_path'] = $request->file('avatar')->store('avatars','public');
+        }
+
+        unset($data['avatar']);
+
+        $request->user()->fill($data);
 
         if ($request->user()->isDirty('email')) {
             $request->user()->email_verified_at = null;
