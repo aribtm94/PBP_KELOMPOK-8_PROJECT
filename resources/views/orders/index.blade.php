@@ -22,7 +22,7 @@
                     <button class="filter-tab bg-transparent border border-[#390517] text-[#390517] hover:bg-[#390517] hover:text-white px-6 py-2 rounded-full text-sm font-medium transition-all duration-200" data-filter="selesai">
                         Completed
                     </button>
-                    <button class="filter-tab bg-transparent border border-[#390517] text-[#390517] hover:bg-[#390517] hover:text-white px-6 py-2 rounded-full text-sm font-medium transition-all duration-200" data-filter="cancelled">
+                    <button class="filter-tab bg-transparent border border-[#390517] text-[#390517] hover:bg-[#390517] hover:text-white px-6 py-2 rounded-full text-sm font-medium transition-all duration-200" data-filter="batal">
                         Cancelled Orders
                     </button>
                 </div>
@@ -123,19 +123,17 @@
                                     
                                     @if($o->status == 'selesai')
                                     <div class="flex flex-wrap gap-2 mt-3">
-                                        <button class="flex items-center gap-2 bg-transparent border border-[#390517] text-[#390517] hover:bg-[#390517] hover:text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-                                            </svg>
-                                            Buy it again
-                                        </button>
-                                        <button class="flex items-center gap-2 bg-transparent border border-[#390517] text-[#390517] hover:bg-[#390517] hover:text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                                            </svg>
-                                            View Product
-                                        </button>
+                                        <form action="{{ route('cart.add', $item->product) }}" method="POST" class="inline">
+                                            @csrf
+                                            <input type="hidden" name="qty" value="{{ $item->qty }}">
+                                            <input type="hidden" name="size" value="{{ $item->size }}">
+                                            <button type="submit" class="flex items-center gap-2 bg-transparent border border-[#390517] text-[#390517] hover:bg-[#390517] hover:text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                                </svg>
+                                                Buy it again
+                                            </button>
+                                        </form>
                                     </div>
                                     @endif
                                 </div>
@@ -210,6 +208,21 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     });
+
+    // Handle back button navigation to prevent flash messages
+    window.addEventListener('pageshow', function(event) {
+        // Check if page was loaded from cache (back button)
+        if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+            // Refresh the page to clear any flash messages
+            window.location.reload(true);
+        }
+    });
+
+    // Alternative method: Clear flash messages on back navigation
+    if (window.performance && window.performance.navigation.type === 2) {
+        // This is a back navigation, reload to clear flash messages
+        window.location.reload(true);
+    }
 });
 </script>
 

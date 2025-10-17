@@ -57,7 +57,7 @@
                                     <div class="w-px h-6 bg-gray-300 mr-3"></div>
                                     <input type="text" name="last_name" 
                                            class="flex-1 bg-transparent border-0 focus:outline-none focus:ring-0 text-gray-900 placeholder-gray-500" 
-                                           placeholder="Last Name">
+                                           placeholder="Last Name" required>
                                 </div>
                             </div>
                             
@@ -70,7 +70,7 @@
                                            class="flex-1 bg-transparent border-0 focus:outline-none focus:ring-0 text-gray-900 placeholder-gray-500" 
                                            placeholder="8123456789" 
                                            pattern="^(0?8[0-9]{8,12})$"
-                                           title="Masukkan nomor telepon yang valid (08xxxxxxxxx atau 8xxxxxxxxx, maksimal 13 digit)">
+                                           title="Masukkan nomor telepon yang valid (08xxxxxxxxx atau 8xxxxxxxxx, maksimal 13 digit)" required>
                                 </div>
                                 <div id="phone-error" class="text-red-500 text-xs mt-1 hidden"></div>
                             </div>
@@ -81,7 +81,7 @@
                                     <div class="w-px h-6 bg-gray-300 mr-3"></div>
                                     <input type="email" name="email" 
                                            class="flex-1 bg-transparent border-0 focus:outline-none focus:ring-0 text-gray-900 placeholder-gray-500" 
-                                           placeholder="Email">
+                                           placeholder="Email" required>
                                 </div>
                             </div>
                         </div>

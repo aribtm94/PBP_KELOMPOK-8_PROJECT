@@ -434,6 +434,13 @@ function updateSlider() {
 
 // Initialize default state
 document.addEventListener('DOMContentLoaded', function() {
+    // Handle back button navigation to prevent flash messages
+    if (window.performance && window.performance.navigation.type === 2) {
+        // This is a back navigation, reload to clear flash messages
+        window.location.reload(true);
+        return; // Exit early
+    }
+
     // Reset all colors to default state - no auto-selection
     document.querySelectorAll('[data-color]').forEach(btn => {
         btn.classList.remove('border-white');
@@ -472,6 +479,15 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Auto-slide (optional) - uncomment if you want automatic sliding
     // setInterval(nextSlide, 5000);
+
+    // Handle pageshow event for back button
+    window.addEventListener('pageshow', function(event) {
+        // Check if page was loaded from cache (back button)
+        if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+            // Refresh the page to clear any flash messages
+            window.location.reload(true);
+        }
+    });
 });
 </script>
 

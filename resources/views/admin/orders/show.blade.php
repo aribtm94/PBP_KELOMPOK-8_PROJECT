@@ -3,6 +3,10 @@
 @section('content')
 <h1 class="text-xl font-bold mb-4" style="color: #E0E0E0;">Detail Pesanan #{{ $order->id }}</h1>
 
+{{-- Flash Messages --}}
+@if(session('success')) <div class="bg-[#A38560]/20 border border-[#A38560]/30 p-2 mb-3 rounded" style="color: #E0E0E0;">{{ session('success') }}</div> @endif
+@if(session('error'))   <div class="bg-red-500/20 border border-red-500/30 p-2 mb-3 rounded" style="color: #E0E0E0;">{{ session('error') }}</div>   @endif
+
 <div class="grid md:grid-cols-2 gap-4 mb-6">
   <div class="border rounded p-3" style="border-color: #E0E0E0;">
     <div style="color: #E0E0E0;"><b>Tanggal:</b> {{ $order->created_at->format('Y-m-d H:i') }}</div>
@@ -52,4 +56,25 @@
 <div class="mt-3 text-right" style="color: #E0E0E0;">
   <b>Total:</b> Rp {{ number_format($order->total,0,',','.') }}
 </div>
+
+<script>
+// Handle back button navigation to prevent flash messages
+document.addEventListener('DOMContentLoaded', function() {
+    // Check for back navigation
+    if (window.performance && window.performance.navigation.type === 2) {
+        // This is a back navigation, reload to clear flash messages
+        window.location.reload(true);
+    }
+
+    // Handle pageshow event for back button
+    window.addEventListener('pageshow', function(event) {
+        // Check if page was loaded from cache (back button)
+        if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+            // Refresh the page to clear any flash messages
+            window.location.reload(true);
+        }
+    });
+});
+</script>
+
 @endsection

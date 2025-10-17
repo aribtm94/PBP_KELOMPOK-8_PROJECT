@@ -211,6 +211,13 @@
 
         // Ensure all quantity inputs are not readonly on page load
         document.addEventListener('DOMContentLoaded', function() {
+            // Handle back button navigation to prevent flash messages
+            if (window.performance && window.performance.navigation.type === 2) {
+                // This is a back navigation, reload to clear flash messages
+                window.location.reload(true);
+                return; // Exit early
+            }
+
             console.log('Cart page loaded');
             
             // Force remove readonly from all inputs multiple times
@@ -246,6 +253,15 @@
             
             document.querySelectorAll('[onclick*="decreaseQty"]').forEach(btn => {
                 console.log('Found decrease button:', btn);
+            });
+
+            // Handle pageshow event for back button
+            window.addEventListener('pageshow', function(event) {
+                // Check if page was loaded from cache (back button)
+                if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+                    // Refresh the page to clear any flash messages
+                    window.location.reload(true);
+                }
             });
         });
 

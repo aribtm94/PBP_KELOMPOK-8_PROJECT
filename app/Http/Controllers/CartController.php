@@ -56,7 +56,7 @@ class CartController extends Controller
         }
 
         $item->save();
-        return back()->with('success', 'Ditambahkan ke keranjang.');
+        return back()->with('cart_success', 'Ditambahkan ke keranjang.');
     }
 
     public function updateQty(Request $r, CartItem $item)
