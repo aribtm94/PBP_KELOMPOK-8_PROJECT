@@ -8,7 +8,7 @@
 
 ---
 
-## Prasyarat (Syarat Sistem)
+## Prasyarat
 
 Pastikan perangkat Anda sudah terpasang:
 - PHP 8.1+ (disarankan 8.2) beserta extension umum:
@@ -17,7 +17,6 @@ Pastikan perangkat Anda sudah terpasang:
 - MySQL 5.7+/MariaDB 10.3+ (atau server database kompatibel)
 - Node.js 18+ dan npm (untuk development server Vite dan build aset)
 - Git
-- Opsional: Docker & Docker Compose (jika ingin menjalankan via container)
 
 Cek versi cepat:
 ```bash

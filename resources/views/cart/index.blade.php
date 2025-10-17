@@ -78,6 +78,13 @@
                                 <div class="p-4 border-b border-light-gray">
                                     <div class="space-y-2">
                                         <div class="font-semibold text-dark-green">{{ $i->product->name }}</div>
+                                        
+                                        <!-- Size Row -->
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-sm text-dark-green">Size:</span>
+                                            <span class="text-sm font-semibold text-dark-green">{{ strtoupper($i->size ?? 'N/A') }}</span>
+                                        </div>
+                                        
                                         <div class="flex items-center justify-between">
                                             <span class="text-sm text-dark-green">Price: Rp {{ number_format($i->product->price, 0, ',', '.') }}</span>
                                         </div>
@@ -103,10 +110,11 @@
 
                         <!-- Desktop: Table layout -->
                         <div class="hidden sm:block overflow-x-auto">
-                            <table class="w-full min-w-[600px]">
+                            <table class="w-full min-w-[800px]">
                                 <thead class="bg-medium-brown">
                                     <tr>
                                         <th class="p-3 sm:p-4 text-left text-light-gray text-sm sm:text-base">Product</th>
+                                        <th class="p-3 sm:p-4 text-center text-light-gray text-sm sm:text-base">Size</th>
                                         <th class="p-3 sm:p-4 text-center text-light-gray text-sm sm:text-base">Qty</th>
                                         <th class="p-3 sm:p-4 text-center text-light-gray text-sm sm:text-base">Price</th>
                                         <th class="p-3 sm:p-4 text-center text-light-gray text-sm sm:text-base">Total</th>
@@ -116,7 +124,7 @@
                                 <tbody>
                                 @if($cart->items->isEmpty())
                                     <tr>
-                                        <td colspan="5" class="p-8 text-center text-dark-green">
+                                        <td colspan="6" class="p-8 text-center text-dark-green">
                                             <div class="text-lg font-semibold mb-2">Your cart is empty</div>
                                             <p class="text-sm">Add some products to get started!</p>
                                         </td>
@@ -125,6 +133,9 @@
                                     @foreach($cart->items as $i)
                                     <tr class="border-t border-light-gray">
                                         <td class="p-3 sm:p-4 text-left text-dark-green text-sm sm:text-base">{{ $i->product->name }}</td>
+                                        <td class="p-3 sm:p-4 text-center text-dark-green text-sm sm:text-base font-semibold">
+                                            {{ strtoupper($i->size ?? 'N/A') }}
+                                        </td>
                                         <td class="p-3 sm:p-4 text-center text-dark-green">
                                             <div class="flex items-center justify-center gap-1 sm:gap-2">
                                                 <button onclick="decreaseQty({{ $i->id }})" class="bg-light-gray text-dark-maroon px-2 sm:px-3 py-1 rounded hover:bg-gray-300 font-bold text-sm sm:text-base">-</button>
@@ -152,26 +163,10 @@
                     <div class="w-full lg:w-1/4 bg-[#A38560] p-4 sm:p-6 rounded-2xl shadow-lg lg:sticky lg:top-5 h-fit min-h-[300px]">
                         <h3 class="font-bold text-lg sm:text-xl mb-4 text-center text-dark-maroon">Order Summary</h3>
                         
-                        <!-- Apply Voucher - Input dan Button Bersebelahan -->
-                        <div class="mb-4 sm:mb-6">
-                            <h4 class="font-semibold text-dark-maroon mb-2 sm:mb-3 text-sm sm:text-base">Apply Voucher</h4>
-                            <div class="flex gap-2 mb-2">
-                                <input type="text" id="voucher_code" placeholder="Voucher code" class="flex-1 border border-dark-maroon bg-[#E0E0E0] p-2 rounded-lg text-dark-green focus:outline-none focus:ring-2 focus:ring-medium-brown text-sm sm:text-base min-w-0">
-                                <button onclick="applyVoucher()" class="bg-green-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-green-700 transition-colors text-sm sm:text-base shrink-0">
-                                    Apply
-                                </button>
-                            </div>
-                            <div id="voucher-message" class="text-xs text-center hidden"></div>
-                        </div>
-                        
                         <div class="space-y-2 sm:space-y-3 mb-4">
                             <div class="flex justify-between text-dark-maroon text-sm sm:text-base">
                                 <span>Sub Total</span>
                                 <span data-subtotal>Rp {{ number_format($cart->total() ?? 0, 0, ',', '.') }}</span>
-                            </div>
-                            <div class="flex justify-between text-dark-maroon text-sm sm:text-base" id="discount-row">
-                                <span>Discount</span>
-                                <span class="text-green-600" id="discount-amount">-Rp 0</span>
                             </div>
                         </div>
                         
@@ -188,7 +183,7 @@
                                     Checkout Now
                                 </div>
                             @else
-                                <a href="{{ route('checkout.show') }}" class="block w-full bg-[#390517] text-light-gray text-center px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity text-sm sm:text-base">
+                                <a href="{{ route('checkout.show') }}" id="checkout-btn" class="block w-full bg-[#390517] text-light-gray text-center px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity text-sm sm:text-base">
                                     Checkout Now
                                 </a>
                             @endif
@@ -212,11 +207,19 @@
     </div>
 
     <script>
-        let appliedDiscount = 0;
         const cartTotal = {{ $cart->total() }};
 
         // Ensure all quantity inputs are not readonly on page load
         document.addEventListener('DOMContentLoaded', function() {
+            // Handle back button navigation to prevent flash messages
+            if (window.performance && window.performance.navigation.type === 2) {
+                // This is a back navigation, reload to clear flash messages
+                window.location.reload(true);
+                return; // Exit early
+            }
+
+            console.log('Cart page loaded');
+            
             // Force remove readonly from all inputs multiple times
             setTimeout(() => {
                 const qtyInputs = document.querySelectorAll('.qty-input, input[id*="qty-"]');
@@ -251,7 +254,18 @@
             document.querySelectorAll('[onclick*="decreaseQty"]').forEach(btn => {
                 console.log('Found decrease button:', btn);
             });
+
+            // Handle pageshow event for back button
+            window.addEventListener('pageshow', function(event) {
+                // Check if page was loaded from cache (back button)
+                if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+                    // Refresh the page to clear any flash messages
+                    window.location.reload(true);
+                }
+            });
         });
+
+
 
         function increaseQty(itemId) {
             // Get current value
@@ -337,8 +351,8 @@
                 el.textContent = 'Rp ' + newSubtotal.toLocaleString('id-ID');
             });
             
-            // Update final total (considering discount)
-            const finalTotal = newSubtotal - appliedDiscount;
+            // Update final total
+            const finalTotal = newSubtotal;
             const finalTotalElements = document.querySelectorAll('[data-final-total]');
             finalTotalElements.forEach(el => {
                 el.textContent = 'Rp ' + finalTotal.toLocaleString('id-ID');
@@ -445,46 +459,11 @@
             form.submit();
         }
 
-        function applyVoucher() {
-            const voucherCode = document.getElementById('voucher_code').value;
-            const messageDiv = document.getElementById('voucher-message');
-            const discountAmount = document.getElementById('discount-amount');
-            const finalTotal = document.getElementById('final-total');
-            
-            if (!voucherCode.trim()) {
-                messageDiv.className = 'text-xs text-center text-red-600';
-                messageDiv.textContent = 'Please enter a voucher code';
-                messageDiv.classList.remove('hidden');
-                return;
-            }
 
-            const validVouchers = {
-                'GAYAKU10': 10,
-                'SAVE20': 20,
-                'NEWUSER': 15,
-                'WELCOME5': 5
-            };
 
-            const upperCode = voucherCode.toUpperCase();
-            if (validVouchers[upperCode]) {
-                const discountPercent = validVouchers[upperCode];
-                appliedDiscount = Math.floor(cartTotal * discountPercent / 100);
-                
-                messageDiv.className = 'text-xs text-center text-green-600';
-                messageDiv.textContent = `${discountPercent}% discount applied!`;
-                messageDiv.classList.remove('hidden');
-                
-                discountAmount.textContent = `-Rp ${appliedDiscount.toLocaleString('id-ID')}`;
-                
-                const newTotal = cartTotal - appliedDiscount;
-                finalTotal.textContent = `Rp ${newTotal.toLocaleString('id-ID')}`;
-                
-            } else {
-                messageDiv.className = 'text-xs text-center text-red-600';
-                messageDiv.textContent = 'Invalid voucher code';
-                messageDiv.classList.remove('hidden');
-            }
-        }
+
+
+
     </script>
 </body>
 </html>

@@ -9,12 +9,16 @@ use Illuminate\Support\Facades\DB;
 
 class CheckoutController extends Controller
 {
-    public function __construct() { $this->middleware('auth'); }
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
 
     public function show()
     {
         $cart = auth()->user()->cart()->with('items.product')->firstOrFail();
         abort_if($cart->items->isEmpty(), 400, 'Keranjang kosong');
+
         return view('checkout.show', compact('cart'));
     }
 
@@ -28,39 +32,51 @@ class CheckoutController extends Controller
 
         $user = auth()->user();
         $cart = $user->cart()->with('items.product')->firstOrFail();
-        if ($cart->items->isEmpty()) return back()->with('error', 'Keranjang kosong');
+
+        if ($cart->items->isEmpty()) {
+            return back()->with('error', 'Keranjang kosong');
+        }
 
         $order = null;
 
         DB::transaction(function () use ($user, $cart, $data, &$order) {
             $total = 0;
+
             foreach ($cart->items as $i) {
                 if ($i->qty > $i->product->stock) {
                     throw new \RuntimeException('Stok tidak cukup');
                 }
+
                 $total += $i->qty * $i->product->price;
             }
 
-            $order = Order::create($data + [
-                'user_id' => $user->id,
-                'total'   => $total,
-                'status'  => 'baru',
+            $order = Order::create([
+                'user_id'          => $user->id,
+                'order_number'     => 'ORD' . strtoupper(uniqid()),
+                'receiver_name'    => $data['receiver_name'],
+                'receiver_address' => $data['address_text'],
+                'receiver_phone'   => $data['phone'] ?? '-',
+                'payment_method'   => 'transfer',
+                'status'           => 'baru',
+                'total'            => $total,
             ]);
 
             foreach ($cart->items as $i) {
                 OrderItem::create([
-                    'order_id'  => $order->id,
-                    'product_id'=> $i->product_id,
-                    'price'     => $i->product->price,
-                    'qty'       => $i->qty,
-                    'subtotal'  => $i->qty * $i->product->price,
+                    'order_id'   => $order->id,
+                    'product_id' => $i->product_id,
+                    'price'      => $i->product->price,
+                    'qty'        => $i->qty,
+                    'subtotal'   => $i->qty * $i->product->price,
                 ]);
+
                 $i->product->decrement('stock', $i->qty);
             }
 
             $cart->items()->delete();
         });
 
-        return redirect()->route('orders.show', $order)->with('success', 'Pesanan dibuat.');
+        return redirect()->route('orders.show', $order)
+            ->with('success', 'Pesanan berhasil dibuat!');
     }
 }

@@ -25,18 +25,38 @@ class CartController extends Controller
 
     public function add(Request $r, Product $product)
     {
-        $data = $r->validate(['qty' => 'required|integer|min:1']);
+        $data = $r->validate([
+            'qty' => 'required|integer|min:1',
+            'size' => 'required|string'
+        ]);
 
         $cart = $this->userCart();
-        $item = $cart->items()->firstOrNew(['product_id' => $product->id]);
-        $item->qty = ($item->exists ? $item->qty : 0) + $data['qty'];
+        
+        // Find existing item with same product and size
+        $item = $cart->items()->where([
+            'product_id' => $product->id,
+            'size' => $data['size']
+        ])->first();
+
+        if ($item) {
+            // Update existing item quantity
+            $item->qty = $item->qty + $data['qty'];
+        } else {
+            // Create new item
+            $item = new CartItem([
+                'cart_id' => $cart->id,
+                'product_id' => $product->id,
+                'size' => $data['size'],
+                'qty' => $data['qty']
+            ]);
+        }
 
         if ($item->qty > $product->stock) {
             return back()->with('error', 'Qty melebihi stok.');
         }
 
         $item->save();
-        return back()->with('success', 'Ditambahkan ke keranjang.');
+        return back()->with('cart_success', 'Ditambahkan ke keranjang.');
     }
 
     public function updateQty(Request $r, CartItem $item)

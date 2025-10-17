@@ -1,12 +1,33 @@
 @extends('layouts.app')
 @section('content')
 <h1 class="text-xl font-bold mb-3" style="color: #E0E0E0;">Admin • Pesanan</h1>
-<table class="w-full border rounded" style="border-color: #E0E0E0;">
-  <tr class="bg-gray-50"><th style="color: #E0E0E0;">No</th><th style="color: #E0E0E0;">User</th><th style="color: #E0E0E0;">Tanggal</th><th style="color: #E0E0E0;">Total</th><th style="color: #E0E0E0;">Status</th><th></th></tr>
+<table class="w-full border rounded overflow-hidden" style="border-color: #E0E0E0;">
+  <tr class="bg-gray-50">
+    <th class="p-2" style="color: #E0E0E0;">No</th>
+    <th style="color: #E0E0E0;">User</th>
+    <th style="color: #E0E0E0;">Items</th>
+    <th style="color: #E0E0E0;">Tanggal</th>
+    <th style="color: #E0E0E0;">Total</th>
+    <th style="color: #E0E0E0;">Status</th>
+    <th></th>
+  </tr>
   @foreach($orders as $o)
   <tr class="border-t" style="border-color: #E0E0E0;">
     <td class="p-2" style="color: #E0E0E0;">#{{ $o->id }}</td>
     <td style="color: #E0E0E0;">{{ $o->user->name }} ({{ $o->user->email }})</td>
+    <td class="p-2" style="color: #E0E0E0;">
+      <div class="text-sm">{{ $o->items->count() }} item(s)</div>
+      <div class="text-xs opacity-75">
+        @foreach($o->items->take(2) as $item)
+          <span class="inline-block bg-gray-600 text-white px-1 rounded text-xs mr-1">
+            {{ $item->size ?? 'N/A' }}
+          </span>
+        @endforeach
+        @if($o->items->count() > 2)
+          <span class="text-xs">+{{ $o->items->count() - 2 }} more</span>
+        @endif
+      </div>
+    </td>
     <td style="color: #E0E0E0;">{{ $o->created_at->format('Y-m-d H:i') }}</td>
     <td style="color: #E0E0E0;">Rp {{ number_format($o->total,0,',','.') }}</td>
     <td>

@@ -557,7 +557,56 @@ document.addEventListener('DOMContentLoaded', function() {
         
         lastScrollTop = scrollTop;
     });
+
+    // Handle back button navigation to prevent flash messages from showing
+    if (window.performance && window.performance.navigation.type === 2) {
+        // This is a back navigation, reload to clear flash messages
+        window.location.reload(true);
+        return; // Exit early to prevent toast from showing
+    }
+
+    // Cart Success Toast Control
+    const cartSuccessToast = document.getElementById('cartSuccessToast');
+    
+    if (cartSuccessToast) {
+        // Show toast with slide-in animation
+        setTimeout(() => {
+            cartSuccessToast.classList.remove('translate-x-full');
+            cartSuccessToast.classList.add('translate-x-0');
+        }, 300);
+        
+        // Auto hide after 3 seconds
+        setTimeout(() => {
+            closeCartToast();
+        }, 3000);
+    }
+
+    // Handle pageshow event for back button
+    window.addEventListener('pageshow', function(event) {
+        // Check if page was loaded from cache (back button)
+        if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+            // Refresh the page to clear any flash messages
+            window.location.reload(true);
+        }
+    });
 });
+
+// Cart Toast Close Function
+function closeCartToast() {
+    const cartSuccessToast = document.getElementById('cartSuccessToast');
+    if (cartSuccessToast) {
+        // Slide out to the right
+        cartSuccessToast.classList.remove('translate-x-0');
+        cartSuccessToast.classList.add('translate-x-full');
+        
+        // Remove element after animation completes
+        setTimeout(() => {
+            if (cartSuccessToast.parentNode) {
+                cartSuccessToast.remove();
+            }
+        }, 500);
+    }
+}
 </script>
 
 <style>
@@ -602,9 +651,29 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 </style>
 
+  <!-- Cart Success Toast -->
+  @if(session('cart_success'))
+  <div id="cartSuccessToast" class="fixed top-4 right-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-4 rounded-lg shadow-xl transform translate-x-full transition-transform duration-500 z-50 max-w-sm">
+      <div class="flex items-center gap-3">
+          <div class="flex-shrink-0">
+              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+              </svg>
+          </div>
+          <div>
+              <div class="font-bold text-sm">Berhasil Ditambahkan!</div>
+              <div class="text-xs opacity-90">Produk telah masuk ke keranjang</div>
+          </div>
+          <button onclick="closeCartToast()" class="ml-auto flex-shrink-0 text-white hover:text-gray-200">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+          </button>
+      </div>
+  </div>
+  @endif
 
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8 w-full flex-1">
-    @if(session('success')) <div class="mb-3 p-3 bg-[#A38560]/20 rounded border border-[#A38560]/30 text-sm sm:text-base" style="color: #E0E0E0;">{{ session('success') }}</div> @endif
     @if(session('error'))   <div class="mb-3 p-3 bg-red-500/20 rounded border border-red-500/30 text-sm sm:text-base" style="color: #E0E0E0;">{{ session('error') }}</div>   @endif
     
     @yield('content')
