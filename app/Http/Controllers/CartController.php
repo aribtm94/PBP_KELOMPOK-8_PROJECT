@@ -78,6 +78,4 @@ class CartController extends Controller
         $item->delete();
         return back()->with('success', 'Item dihapus.');
     }
-
-
 }
