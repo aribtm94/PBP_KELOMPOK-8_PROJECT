@@ -68,10 +68,10 @@
                                     <thead class="bg-[#A38560]">
                                         <tr>
                                             <th class="p-4 text-left text-[#E0E0E0] text-sm w-[38%]">Product</th>
-                                            <th class="p-4 text-center text-[#E0E0E0] text-sm w-[8rem]">Size</th>
-                                            <th class="p-4 text-center text-[#E0E0E0] text-sm w-[14%]">Qty</th>
-                                            <th class="p-4 text-center text-[#E0E0E0] text-sm w-[16%]">Price</th>
-                                            <th class="p-4 text-center text-[#E0E0E0] text-sm w-[16%]">Total</th>
+                                            <th class="p-4 text-center text-[#E0E0E0] text-sm w-[7rem]">Size</th>
+                                            <th class="p-4 text-center text-[#E0E0E0] text-sm w-[12%]">Qty</th>
+                                            <th class="p-4 text-center text-[#E0E0E0] text-sm w-[17%]">Price</th>
+                                            <th class="p-4 text-center text-[#E0E0E0] text-sm w-[17%]">Total</th>
                                             <th class="p-4 text-center text-[#E0E0E0] text-sm w-[10%]">Action</th>
                                         </tr>
                                     </thead>

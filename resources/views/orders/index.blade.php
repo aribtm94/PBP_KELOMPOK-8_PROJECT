@@ -62,12 +62,12 @@
                                 <!-- Order Header -->
                                 <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-4">
                                     <div class="flex flex-col sm:flex-row sm:items-center gap-8 mb-4 lg:mb-0">
-                                        <div class="min-w-[220px]">
+                                        <div class="min-w-[160px]">
                                             <div class="text-sm text-[#390517] opacity-70 mb-1">Order Date :</div>
                                             <div class="font-medium text-[#390517]">{{ $o->created_at->format('M d, Y') }}</div>
                                         </div>
 
-                                        <div class="min-w-[220px]">
+                                        <div class="min-w-[160px]">
                                             <div class="text-sm text-[#390517] opacity-70 mb-1">Total Amount :</div>
                                             <div class="font-semibold text-[#390517]">Rp {{ number_format($o->total,0,',','.') }}</div>
                                         </div>
@@ -80,11 +80,8 @@
 
                                     <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3">
                                         <div class="text-sm text-[#390517] opacity-70 text-right">Order : #{{ str_pad($o->id, 11, '0', STR_PAD_LEFT) }}</div>
-                                        <div class="flex gap-2">
-                                            <button class="bg-transparent border border-[#390517] hover:bg-[#390517] hover:text-white text-[#390517] px-4 py-2 rounded-lg text-sm font-medium transition-colors">
-                                                View Invoice
-                                            </button>
-                                            <a href="{{ route('orders.show', $o) }}" class="bg-[#390517] hover:bg-[#2a0411] text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                                        <div>
+                                            <a href="{{ route('orders.show', $o) }}" class="inline-block bg-[#390517] hover:bg-[#2a0411] text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
                                                 View Order
                                             </a>
                                         </div>
@@ -104,9 +101,10 @@
                                             <p class="text-sm text-[#390517] opacity-70 mb-3">Return or Replace items : Eligible through {{ $o->created_at->addDays(30)->format('M d, Y') }}</p>
                                             @endif
                                         </div>
+                                        <div class="text-right text-sm font-semibold text-[#390517]">
+                                            Rp {{ number_format($item->price * $item->qty,0,',','.') }}
+                                        </div>
                                     </div>
-                                    
-                                    {{-- Buy it again removed per request --}}
                                 </div>
                                 @endforeach
                             </div>
