@@ -64,29 +64,21 @@ composer install
 php artisan key:generate
 ```
 
-6) Jalankan migrasi (opsional: seed data awal jika tersedia)
+6) Jalankan migrasi dan seeder
 ```bash
-php artisan migrate
-# jika ada seeder:
-php artisan db:seed
-```
+php artisan migrate --seed
 
-7) Install dependency frontend dan jalankan dev server Vite
+
+7) Install dependency frontend dan build frontend
 ```bash
 npm install
-npm run dev
+npm run build
 ```
 
 8) Jalankan server Laravel
 ```bash
 php artisan serve
 ```
-
-Catatan:
-- Proses `npm run dev` akan menjalankan Vite dev server (hot reload). Biarkan terminal ini aktif saat pengembangan.
-- Jika ingin build untuk produksi, gunakan `npm run build`.
-
----
 
 ## Perintah Umum yang Berguna
 
