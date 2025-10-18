@@ -4,7 +4,7 @@
 @php $availableSizes = ['S','M','L','XL','XXL']; @endphp
 
 <div class="min-h-screen bg-[#FBF2E3] py-8">
-    <div class="max-w-5xl mx-auto px-4">
+    <div class="max-w-6xl mx-auto px-4">
         <div class="bg-transparent rounded-2xl overflow-hidden">
             <div class="bg-transparent px-8 py-6">
                 <h1 class="text-5xl font-bold text-[#390517]">Shopping Cart</h1>
@@ -25,7 +25,7 @@
                         <a href="{{ url('/') }}" class="bg-[#390517] text-white px-8 py-3 rounded-lg font-medium hover:bg-[#2a0411] transition-colors">Start Shopping</a>
                     </div>
                 @else
-                    <div class="grid gap-6 lg:grid-cols-[2fr_1fr]">
+                    <div class="space-y-6">
                         <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
                             <div class="block sm:hidden">
                                 @foreach($cart->items as $i)
@@ -64,7 +64,7 @@
                             </div>
 
                             <div class="hidden sm:block overflow-x-auto">
-                                <table class="w-full min-w-[720px]">
+                                <table class="w-full min-w-[860px]">
                                     <thead class="bg-[#A38560]">
                                         <tr>
                                             <th class="p-4 text-left text-[#E0E0E0] text-sm">Product</th>
@@ -108,7 +108,7 @@
                             </div>
                         </div>
 
-                        <div class="bg-[#A38560] p-6 rounded-2xl shadow-lg h-fit lg:sticky lg:top-24">
+                        <div class="bg-[#A38560] p-6 rounded-2xl shadow-lg">
                             <h3 class="font-bold text-lg mb-4 text-center text-[#390517]">Order Summary</h3>
                             <div class="space-y-2 mb-4">
                                 <div class="flex justify-between text-[#390517] text-sm">
@@ -122,11 +122,11 @@
                                     <span data-final-total>Rp {{ number_format($cart->total() ?? 0, 0, ',', '.') }}</span>
                                 </div>
                             </div>
-                            <div class="space-y-3">
-                                <a href="{{ route('checkout.show') }}" class="block w-full bg-[#390517] text-[#E0E0E0] text-center px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity text-sm">
+                            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between sm:gap-4 gap-3">
+                                <a href="{{ route('checkout.show') }}" class="w-full sm:w-auto sm:flex-1 bg-[#390517] text-[#E0E0E0] text-center px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity text-sm">
                                     Checkout Now
                                 </a>
-                                <a href="{{ url('/') }}" class="block w-full border-2 border-[#390517] text-center px-6 py-3 rounded-lg font-semibold text-[#390517] hover:bg-white transition-colors text-sm">
+                                <a href="{{ url('/') }}" class="w-full sm:w-auto sm:flex-1 border-2 border-[#390517] text-center px-6 py-3 rounded-lg font-semibold text-[#390517] hover:bg-white transition-colors text-sm">
                                     Continue Shopping
                                 </a>
                             </div>
