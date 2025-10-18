@@ -1,80 +1,85 @@
 @extends('layouts.app')
 
 @section('content')
-<h1 class="text-xl font-bold mb-4" style="color: #E0E0E0;">Detail Pesanan #{{ $order->id }}</h1>
+<div class="space-y-6 animate-fade-in">
+    <h1 class="text-2xl font-bold text-[#E0E0E0] mb-4 border-b border-[#A38560]/30 pb-2">
+        Detail Pesanan <span class="text-[#A38560]">#{{ $order->id }}</span>
+    </h1>
 
-{{-- Flash Messages --}}
-@if(session('success')) <div class="bg-[#A38560]/20 border border-[#A38560]/30 p-2 mb-3 rounded" style="color: #E0E0E0;">{{ session('success') }}</div> @endif
-@if(session('error'))   <div class="bg-red-500/20 border border-red-500/30 p-2 mb-3 rounded" style="color: #E0E0E0;">{{ session('error') }}</div>   @endif
+    <!-- Informasi Pesanan -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Informasi Pembeli -->
+        <div class="bg-[#1F3A34] border border-[#A38560]/40 rounded-2xl p-5 shadow-lg hover:shadow-xl transition-all">
+            <h2 class="text-lg font-semibold text-[#A38560] mb-3">Informasi Pesanan</h2>
+            <div class="space-y-2 text-sm text-[#E0E0E0]">
+                <p><strong>Tanggal:</strong> {{ $order->created_at->format('Y-m-d H:i') }}</p>
+                <p><strong>User:</strong> {{ $order->user->name }} ({{ $order->user->email }})</p>
+                <p>
+                    <strong>Status:</strong> 
+                    <span class="px-2 py-1 rounded-lg text-xs font-semibold 
+                        @if($order->status === 'baru') bg-yellow-500/20 text-yellow-400 
+                        @elseif($order->status === 'diproses') bg-blue-500/20 text-blue-400 
+                        @elseif($order->status === 'dikirim') bg-indigo-500/20 text-indigo-400 
+                        @elseif($order->status === 'selesai') bg-green-500/20 text-green-400 
+                        @elseif($order->status === 'batal') bg-red-500/20 text-red-400 
+                        @endif">
+                        {{ ucfirst($order->status) }}
+                    </span>
+                </p>
+                <p><strong>Penerima:</strong> {{ $order->receiver_name }}</p>
+                <p><strong>Alamat:</strong> {{ $order->receiver_address ?? '-' }}</p>
+                <p><strong>Telp:</strong> {{ $order->receiver_phone ?? '-' }}</p>
+            </div>
+        </div>
 
-<div class="grid md:grid-cols-2 gap-4 mb-6">
-  <div class="border rounded p-3" style="border-color: #E0E0E0;">
-    <div style="color: #E0E0E0;"><b>Tanggal:</b> {{ $order->created_at->format('Y-m-d H:i') }}</div>
-    <div style="color: #E0E0E0;"><b>User:</b> {{ $order->user->name }} ({{ $order->user->email }})</div>
-    <div style="color: #E0E0E0;"><b>Status:</b> <span class="px-2 py-1 rounded bg-[#A38560]/20 border border-[#A38560]/30" style="color: #E0E0E0;">{{ $order->status }}</span></div>
-  <div class="mt-2" style="color: #E0E0E0;"><b>Penerima:</b> <span class="font-semibold">{{ $order->receiver_name }}</span></div>
-  <div style="color: #E0E0E0;"><b>Alamat:</b> <span class="font-semibold">{{ $order->receiver_address }}</span></div>
-  <div style="color: #E0E0E0;"><b>Telp:</b> <span class="font-semibold">{{ $order->receiver_phone ?? '-' }}</span></div>
-  </div>
+        <!-- Ubah Status -->
+        <div class="bg-[#1F3A34] border border-[#A38560]/40 rounded-2xl p-5 shadow-lg hover:shadow-xl transition-all">
+            <h2 class="text-lg font-semibold text-[#A38560] mb-3">Ubah Status</h2>
+            <form method="POST" action="{{ route('admin.orders.status', $order) }}" class="space-y-4">
+                @csrf
+                @method('PATCH')
+                <select name="status" class="w-full bg-[#16302B] text-white border border-[#A38560]/50 rounded-lg p-2 focus:ring-2 focus:ring-[#A38560]">
+                    @foreach(['baru','diproses','dikirim','selesai','batal'] as $s)
+                        <option value="{{ $s }}" @selected($order->status === $s)>{{ ucfirst($s) }}</option>
+                    @endforeach
+                </select>
+                <button type="submit" class="w-full bg-[#A38560] text-[#390517] font-semibold py-2 rounded-lg hover:bg-[#8B7355] transition-colors">
+                    Simpan Perubahan
+                </button>
+            </form>
+        </div>
+    </div>
 
-  <div class="border rounded p-3" style="border-color: #E0E0E0;">
-    <h2 class="font-semibold mb-2" style="color: #E0E0E0;">Ubah Status</h2>
-    <form method="POST" action="{{ route('admin.orders.status', $order) }}" class="flex gap-2 items-center">
-      @csrf @method('PATCH')
-      <select name="status" class="border p-2 rounded" style="border-color: #E0E0E0; color: #E0E0E0; background-color: transparent;">
-        @foreach(['baru','diproses','dikirim','selesai','batal'] as $s)
-          <option value="{{ $s }}" @selected($order->status === $s)>{{ ucfirst($s) }}</option>
-        @endforeach
-      </select>
-      <button class="border px-3 py-1 rounded" style="color: #E0E0E0; border-color: #E0E0E0;">Simpan</button>
-    </form>
-  </div>
+    <!-- Item Pesanan -->
+    <div class="bg-[#1F3A34] border border-[#A38560]/40 rounded-2xl p-5 shadow-lg hover:shadow-xl transition-all">
+        <h2 class="text-lg font-semibold text-[#A38560] mb-3">Item Pesanan</h2>
+        <div class="overflow-x-auto rounded-xl">
+            <table class="w-full border-collapse">
+                <thead>
+                    <tr class="bg-[#A38560]/20 text-[#E0E0E0] text-left">
+                        <th class="p-3">Produk</th>
+                        <th class="p-3">Ukuran</th>
+                        <th class="p-3">Qty</th>
+                        <th class="p-3">Harga</th>
+                        <th class="p-3">Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($order->items as $item)
+                    <tr class="border-b border-[#A38560]/20 text-[#E0E0E0] hover:bg-[#A38560]/10 transition-all">
+                        <td class="p-3">{{ $item->product->name }}</td>
+                        <td class="p-3">{{ $item->size ?? '-' }}</td>
+                        <td class="p-3">{{ $item->qty }}</td>
+                        <td class="p-3">Rp {{ number_format($item->price, 0, ',', '.') }}</td>
+                        <td class="p-3">Rp {{ number_format($item->price * $item->qty, 0, ',', '.') }}</td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+        <div class="text-right text-[#A38560] font-semibold mt-4">
+            Total: Rp {{ number_format($order->total, 0, ',', '.') }}
+        </div>
+    </div>
 </div>
-
-<h2 class="font-semibold mb-2" style="color: #E0E0E0;">Item Pesanan</h2>
-<table class="w-full border rounded overflow-hidden" style="border-color: #E0E0E0;">
-  <tr class="bg-gray-50">
-    <th class="p-2 text-left" style="color: #E0E0E0;">Produk</th>
-    <th style="color: #E0E0E0;">Ukuran</th>
-    <th style="color: #E0E0E0;">Qty</th>
-    <th style="color: #E0E0E0;">Harga</th>
-    <th style="color: #E0E0E0;">Subtotal</th>
-  </tr>
-  @foreach($order->items as $i)
-    <tr class="border-t" style="border-color: #E0E0E0;">
-      <td class="p-2" style="color: #E0E0E0;">{{ $i->product->name }}</td>
-      <td class="text-center p-2" style="color: #E0E0E0;">
-        <span class="font-semibold">{{ strtoupper($i->size ?? 'N/A') }}</span>
-      </td>
-      <td class="text-center" style="color: #E0E0E0;">{{ $i->qty }}</td>
-      <td class="text-center" style="color: #E0E0E0;">Rp {{ number_format($i->price,0,',','.') }}</td>
-      <td class="text-center" style="color: #E0E0E0;">Rp {{ number_format($i->subtotal,0,',','.') }}</td>
-    </tr>
-  @endforeach
-</table>
-
-<div class="mt-3 text-right" style="color: #E0E0E0;">
-  <b>Total:</b> Rp {{ number_format($order->total,0,',','.') }}
-</div>
-
-<script>
-// Handle back button navigation to prevent flash messages
-document.addEventListener('DOMContentLoaded', function() {
-    // Check for back navigation
-    if (window.performance && window.performance.navigation.type === 2) {
-        // This is a back navigation, reload to clear flash messages
-        window.location.reload(true);
-    }
-
-    // Handle pageshow event for back button
-    window.addEventListener('pageshow', function(event) {
-        // Check if page was loaded from cache (back button)
-        if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
-            // Refresh the page to clear any flash messages
-            window.location.reload(true);
-        }
-    });
-});
-</script>
-
 @endsection
