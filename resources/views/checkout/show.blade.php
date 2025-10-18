@@ -127,13 +127,13 @@
                         </h2>
                         
                         <div class="flex gap-4">
-                            <button type="button" data-payment="qris" class="px-6 py-2 bg-[#A38560] text-white rounded-full text-sm hover:bg-[#93785A] transition-colors">
+                            <button type="button" name="data-payment" data-payment="qris" class="px-6 py-2 bg-[#A38560] text-white rounded-full text-sm hover:bg-[#93785A] transition-colors">
                                 QRIS
                             </button>
-                            <button type="button" data-payment="cod" class="px-6 py-2 bg-gray-200 text-gray-700 rounded-full text-sm hover:bg-gray-300 transition-colors">
+                            <button type="button" name="data-payment" data-payment="cod" class="px-6 py-2 bg-gray-200 text-gray-700 rounded-full text-sm hover:bg-gray-300 transition-colors">
                                 COD
                             </button>
-                            <button type="button" data-payment="transfer" class="px-6 py-2 bg-gray-200 text-gray-700 rounded-full text-sm hover:bg-gray-300 transition-colors">
+                            <button type="button" name="data-payment" data-payment="transfer" class="px-6 py-2 bg-gray-200 text-gray-700 rounded-full text-sm hover:bg-gray-300 transition-colors">
                                 Transfer
                             </button>
                         </div>
