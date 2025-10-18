@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
@@ -19,7 +20,8 @@ return new class extends Migration
             $table->string('payment_method', 50)->default('transfer');
             $table->string('status', 50)->default('baru');
             $table->bigInteger('total')->default(0);
-            $table->timestamps();
+            $table->timestamp('created_at')->nullable()->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->timestamp('updated_at')->nullable()->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
         });
 
         Schema::create('order_items', function (Blueprint $table) {
@@ -29,7 +31,8 @@ return new class extends Migration
             $table->bigInteger('price');
             $table->integer('qty');
             $table->bigInteger('subtotal');
-            $table->timestamps();
+            $table->timestamp('created_at')->nullable()->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->timestamp('updated_at')->nullable()->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
         });
     }
 
