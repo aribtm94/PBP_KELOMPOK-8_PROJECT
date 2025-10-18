@@ -1,165 +1,233 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="flex justify-between items-center mb-4">
-  <h1 class="text-xl font-bold" style="color: #E0E0E0;">Admin • Produk</h1>
-  <a href="{{ route('admin.orders.index') }}" class="bg-[#A38560] hover:bg-[#8B7355] text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200">
-    📋 Lihat Pesanan User
-  </a>
+<div class="p-6 bg-[#0E2D2D] text-white rounded-lg shadow-md">
+
+  <div class="mb-4 flex items-center justify-between">
+    <div class="flex items-center gap-4">
+      <button onclick="location.href='{{ route('admin.dashboard') }}'" class="bg-gray-700 text-white px-3 py-1 rounded hover:bg-gray-600 transition">← Dashboard</button>
+      <h1 class="text-3xl font-bold">Product</h1>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <input type="text" placeholder="Search" class="px-4 py-2 rounded-full text-black w-80" />
+      <form method="GET" class="inline-block">
+        <label for="admin-sort" class="sr-only">Sort by</label>
+        <select id="admin-sort" name="sort" onchange="this.form.submit()" class="px-3 py-2 rounded bg-[#113737] text-white">
+          <option value="latest" {{ (isset($sort) && $sort === 'latest') ? 'selected' : '' }}>Latest</option>
+          <option value="price_asc" {{ (isset($sort) && $sort === 'price_asc') ? 'selected' : '' }}>Price: Low → High</option>
+          <option value="price_desc" {{ (isset($sort) && $sort === 'price_desc') ? 'selected' : '' }}>Price: High → Low</option>
+          <option value="name_asc" {{ (isset($sort) && $sort === 'name_asc') ? 'selected' : '' }}>Name: A → Z</option>
+          <option value="name_desc" {{ (isset($sort) && $sort === 'name_desc') ? 'selected' : '' }}>Name: Z → A</option>
+        </select>
+      </form>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-12 gap-6">
+    <!-- Left: form -->
+    <div class="col-span-3 border rounded-lg p-6 bg-[#07221F]">
+      <form id="product-form" action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
+        @csrf
+        <input type="hidden" name="_method" id="form-method" value="POST">
+        <div>
+          <label class="block mb-1 text-sm">Name</label>
+        <input type="text" name="name" id="product-name" required class="w-full px-3 py-2 rounded bg-[#0F3B38] text-white">
+        </div>
+
+        <div>
+          <label class="block mb-1 text-sm">Price</label>
+        <input type="number" name="price" id="product-price" required class="w-full px-3 py-2 rounded bg-[#0F3B38] text-white">
+        </div>
+
+        <div>
+          <label class="block mb-1 text-sm">Categories</label>
+            <select name="category_id" id="product-category" class="w-full px-3 py-2 rounded bg-[#0F3B38] text-white">
+            <option value="">-- Select --</option>
+            @foreach ($categories as $category)
+              <option value="{{ $category->id }}">{{ $category->name }}</option>
+            @endforeach
+          </select>
+        </div>
+
+        <div>
+          <label class="block mb-1 text-sm">Stock</label>
+        <input type="number" name="stock" id="product-stock" class="w-full px-3 py-2 rounded bg-[#0F3B38] text-white">
+        </div>
+
+        <div>
+          <label class="block mb-1 text-sm">Color</label>
+        <input type="text" name="color" id="product-color" class="w-full px-3 py-2 rounded bg-[#0F3B38] text-white" placeholder="comma separated">
+        </div>
+
+        <div>
+          <label class="block mb-1 text-sm">Size</label>
+        <input type="text" name="size" id="product-size" class="w-full px-3 py-2 rounded bg-[#0F3B38] text-white" placeholder="comma separated">
+        </div>
+
+        <div>
+          <label class="block mb-1 text-sm">Image</label>
+        <input type="file" name="image" id="product-image" accept="image/*" class="w-full text-sm text-white">
+        <div id="image-preview" class="mt-2 h-40 w-full bg-gray-800 flex items-center justify-center text-gray-400">Preview</div>
+        </div>
+
+        <div>
+          <label class="block mb-1 text-sm">Description</label>
+        <textarea name="description" id="product-description" rows="4" class="w-full px-3 py-2 rounded bg-[#0F3B38] text-white"></textarea>
+        </div>
+
+        <div>
+            <div class="flex gap-2">
+              <button type="submit" id="form-submit" class="bg-[#D2B48C] text-black px-4 py-2 rounded">Add Product</button>
+              <button type="button" id="form-cancel" class="bg-gray-600 text-white px-4 py-2 rounded hidden">Cancel</button>
+            </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Right: product grid -->
+    <div class="col-span-9">
+      <div class="border rounded-lg p-4 bg-[#073231]">
+        <div class="grid grid-cols-4 gap-6">
+          @foreach ($products as $product)
+              <div tabindex="0" role="button" class="bg-white text-black rounded-lg overflow-hidden shadow cursor-pointer product-card" data-id="{{ $product->id }}" data-name="{{ e($product->name) }}" data-price="{{ $product->price }}" data-stock="{{ $product->stock }}" data-category="{{ $product->category_id }}" data-color="{{ e($product->color ?? '') }}" data-size="{{ e($product->size ?? '') }}" data-description="{{ e($product->description ?? '') }}" data-image="{{ $product->image_path ? asset('storage/'.$product->image_path) : '' }}">
+              <div class="h-56 bg-gray-200 flex items-center justify-center">
+                @if($product->image_path)
+                  <img src="{{ asset('storage/'.$product->image_path) }}" class="h-full w-full object-cover" alt="{{ $product->name }}">
+                @else
+                  <div class="text-sm text-gray-500">No Image</div>
+                @endif
+              </div>
+              <div class="p-3">
+                <div class="text-sm text-gray-600">Rp{{ number_format($product->price,0,',','.') }}</div>
+                <div class="font-semibold mt-1">{{ $product->name }}</div>
+                <div class="text-xs text-gray-500">{{ $product->category?->name }}</div>
+                <div class="mt-3 text-xs text-gray-700">{{ $product->stock }} Stocks</div>
+                  <div class="mt-3 flex gap-2">
+                    <form action="{{ route('admin.products.destroy', $product) }}" method="POST">
+                      @csrf
+                      @method('DELETE')
+                      <button type="submit" onclick="event.stopPropagation(); return confirm('Delete product?')" class="text-sm px-3 py-1 bg-red-600 text-white rounded">Delete</button>
+                    </form>
+                  </div>
+              </div>
+            </div>
+          @endforeach
+        </div>
+
+        <div class="mt-6">
+          {{ $products->links() }}
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
-
-{{-- Flash & error --}}
-@if(session('success')) <div class="bg-[#A38560]/20 border border-[#A38560]/30 p-2 mb-3 rounded" style="color: #E0E0E0;">{{ session('success') }}</div> @endif
-@if(session('error'))   <div class="bg-red-500/20 border border-red-500/30 p-2 mb-3 rounded" style="color: #E0E0E0;">{{ session('error') }}</div>   @endif
-@if($errors->any())
-  <div class="bg-red-500/20 border border-red-500/30 p-2 mb-3 rounded">
-    @foreach($errors->all() as $e) <div style="color: #E0E0E0;">{{ $e }}</div> @endforeach
-  </div>
-@endif
-
-<form method="POST" action="{{ route('admin.products.store') }}" enctype="multipart/form-data" class="grid md:grid-cols-2 gap-3 mb-6">
-  @csrf
-  <input name="name" class="border p-2 rounded" style="border-color: #E0E0E0; color: #E0E0E0; background-color: transparent;" placeholder="Nama" value="{{ old('name') }}" required>
-
-  <select name="category_id" class="border p-2 rounded" style="border-color: #E0E0E0; color: #E0E0E0; background-color: transparent;">
-    <option value="">(Kategori)</option>
-    @foreach($categories as $c)
-      <option value="{{ $c->id }}" @selected(old('category_id')==$c->id)>{{ $c->name }}</option>
-    @endforeach
-  </select>
-
-  <input name="price" type="number" min="0" class="border p-2 rounded" style="border-color: #E0E0E0; color: #E0E0E0; background-color: transparent;" placeholder="Harga" value="{{ old('price') }}" required>
-  <input name="stock" type="number" min="0" class="border p-2 rounded" style="border-color: #E0E0E0; color: #E0E0E0; background-color: transparent;" placeholder="Stok" value="{{ old('stock') }}" required>
-
-  <input name="image" type="file" accept="image/*" class="border p-2 rounded" style="border-color: #E0E0E0; color: #E0E0E0; background-color: transparent;">
-  <label class="flex items-center gap-2" style="color: #E0E0E0;"><input type="checkbox" name="is_active" value="1" {{ old('is_active', true) ? 'checked' : '' }}> Aktif</label>
-
-  <textarea name="description" rows="3" class="border p-2 rounded md:col-span-2" style="border-color: #E0E0E0; color: #E0E0E0; background-color: transparent;" placeholder="Deskripsi">{{ old('description') }}</textarea>
-
-  <div class="md:col-span-2">
-    <button type="submit" class="border px-3 py-2 rounded" style="color: #E0E0E0; border-color: #E0E0E0;">Tambah Produk</button>
-  </div>
-</form>
-
-{{-- Edit Form (Hidden by default) --}}
-<div id="editFormContainer" class="hidden">
-  <h2 class="text-lg font-bold mb-4" style="color: #E0E0E0;">Edit Produk</h2>
-  <form id="editForm" method="POST" action="" enctype="multipart/form-data" class="grid md:grid-cols-2 gap-3 mb-6">
-  @csrf
-  @method('PATCH')
-  
-  <input id="editName" name="name" class="border p-2 rounded" style="border-color: #E0E0E0; color: #E0E0E0; background-color: transparent;" placeholder="Nama" required>
-
-  <select id="editCategoryId" name="category_id" class="border p-2 rounded" style="border-color: #E0E0E0; color: #E0E0E0; background-color: transparent;">
-    <option value="">(Kategori)</option>
-    @foreach($categories as $c)
-      <option value="{{ $c->id }}">{{ $c->name }}</option>
-    @endforeach
-  </select>
-
-  <input id="editPrice" name="price" type="number" min="0" class="border p-2 rounded" style="border-color: #E0E0E0; color: #E0E0E0; background-color: transparent;" placeholder="Harga" required>
-  <input id="editStock" name="stock" type="number" min="0" class="border p-2 rounded" style="border-color: #E0E0E0; color: #E0E0E0; background-color: transparent;" placeholder="Stok" required>
-
-  <input name="image" type="file" accept="image/*" class="border p-2 rounded" style="border-color: #E0E0E0; color: #E0E0E0; background-color: transparent;">
-  <label class="flex items-center gap-2" style="color: #E0E0E0;"><input id="editIsActive" type="checkbox" name="is_active" value="1"> Aktif</label>
-
-  <textarea id="editDescription" name="description" rows="3" class="border p-2 rounded md:col-span-2" style="border-color: #E0E0E0; color: #E0E0E0; background-color: transparent;" placeholder="Deskripsi"></textarea>
-
-  <div class="md:col-span-2">
-    <button type="submit" class="border px-3 py-2 rounded mr-2" style="color: #E0E0E0; border-color: #E0E0E0;">Update Produk</button>
-    <button type="button" onclick="cancelEdit()" class="border px-3 py-2 rounded" style="color: #E0E0E0; border-color: #E0E0E0;">Batal</button>
-  </div>
-  </form>
-</div>
-
-<table class="w-full border rounded" style="border-color: #E0E0E0;">
-  <tr class="bg-gray-50">
-    <th class="p-2 text-left" style="color: #E0E0E0;">Nama</th><th style="color: #E0E0E0;">Kategori</th><th style="color: #E0E0E0;">Harga</th><th style="color: #E0E0E0;">Stok</th><th style="color: #E0E0E0;">Aktif</th><th></th>
-  </tr>
-  @foreach($products as $p)
-    <tr class="border-t" style="border-color: #E0E0E0;">
-      <td class="p-2" style="color: #E0E0E0;">{{ $p->name }}</td>
-      <td class="text-center" style="color: #E0E0E0;">{{ $p->category->name ?? '-' }}</td>
-      <td class="text-center" style="color: #E0E0E0;">Rp {{ number_format($p->price,0,',','.') }}</td>
-      <td class="text-center" style="color: #E0E0E0;">{{ $p->stock }}</td>
-      <td class="text-center" style="color: #E0E0E0;">{{ $p->is_active ? 'Ya' : 'Tidak' }}</td>
-      <td class="text-center">
-        <button onclick="editProduct({{ $p->id }}, '{{ addslashes($p->name) }}', {{ $p->category_id ?: 'null' }}, {{ $p->price }}, {{ $p->stock }}, {{ $p->is_active ? 1 : 0 }}, '{{ addslashes($p->description ?? '') }}')" class="border px-2 py-1 rounded mr-2" style="color: #E0E0E0; border-color: #E0E0E0;">Edit</button>
-        <form method="POST" action="{{ route('admin.products.destroy',$p) }}" onsubmit="return confirmDelete('{{ $p->name }}')" class="inline">
-          @csrf @method('DELETE')
-          <button type="submit" class="border px-2 py-1 rounded hover:bg-red-600 hover:text-white transition-colors" style="color: #E0E0E0; border-color: #E0E0E0;">Hapus</button>
-        </form>
-      </td>
-    </tr>
-  @endforeach
-</table>
-<div class="mt-3" style="color: #E0E0E0;">{{ $products->links() }}</div>
 @endsection
 
-<script>
-// Handle back button navigation to prevent flash messages
-document.addEventListener('DOMContentLoaded', function() {
-    // Check for back navigation
-    if (window.performance && window.performance.navigation.type === 2) {
-        // This is a back navigation, reload to clear flash messages
-        window.location.reload(true);
-    }
+          @push('scripts')
+          <script>
+            (function(){
+              const cards = document.querySelectorAll('.product-card');
+              const form = document.getElementById('product-form');
+              const methodInput = document.getElementById('form-method');
+              const submitBtn = document.getElementById('form-submit');
+              const cancelBtn = document.getElementById('form-cancel');
 
-    // Handle pageshow event for back button
-    window.addEventListener('pageshow', function(event) {
-        // Check if page was loaded from cache (back button)
-        if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
-            // Refresh the page to clear any flash messages
-            window.location.reload(true);
-        }
-    });
-});
+              if (!form || !methodInput || !submitBtn || !cancelBtn) return;
 
-function editProduct(id, name, categoryId, price, stock, isActive, description) {
-    // Hide the add form
-    document.querySelector('form[action="{{ route('admin.products.store') }}"]').style.display = 'none';
-    
-    // Show the edit form container
-    const editFormContainer = document.getElementById('editFormContainer');
-    const editForm = document.getElementById('editForm');
-    editFormContainer.classList.remove('hidden');
-    editForm.style.display = 'grid';
-    
-    // Update the form action to the correct update route
-    editForm.action = '/admin/products/' + id;
-    
-    // Populate the form fields
-    document.getElementById('editName').value = name;
-    document.getElementById('editCategoryId').value = categoryId || '';
-    document.getElementById('editPrice').value = price;
-    document.getElementById('editStock').value = stock;
-    document.getElementById('editIsActive').checked = isActive == 1;
-    document.getElementById('editDescription').value = description;
-    
-    // Scroll to the form
-    editFormContainer.scrollIntoView({ behavior: 'smooth' });
-}
+              const fields = {
+                name: document.getElementById('product-name'),
+                price: document.getElementById('product-price'),
+                category: document.getElementById('product-category'),
+                stock: document.getElementById('product-stock'),
+                color: document.getElementById('product-color'),
+                size: document.getElementById('product-size'),
+                description: document.getElementById('product-description'),
+                imagePreview: document.getElementById('image-preview')
+              };
 
-function cancelEdit() {
-    // Hide the edit form container
-    const editFormContainer = document.getElementById('editFormContainer');
-    const editForm = document.getElementById('editForm');
-    editFormContainer.classList.add('hidden');
-    editForm.style.display = 'none';
-    
-    // Show the add form
-    document.querySelector('form[action="{{ route('admin.products.store') }}"]').style.display = 'grid';
-    
-    // Clear form fields
-    document.getElementById('editName').value = '';
-    document.getElementById('editCategoryId').value = '';
-    document.getElementById('editPrice').value = '';
-    document.getElementById('editStock').value = '';
-    document.getElementById('editIsActive').checked = false;
-    document.getElementById('editDescription').value = '';
-}
+              function resetForm() {
+                form.action = "{{ route('admin.products.store') }}";
+                methodInput.value = 'POST';
+                submitBtn.textContent = 'Add Product';
+                cancelBtn.classList.add('hidden');
+                if (fields.name) fields.name.value = '';
+                if (fields.price) fields.price.value = '';
+                if (fields.category) fields.category.value = '';
+                if (fields.stock) fields.stock.value = '';
+                if (fields.color) fields.color.value = '';
+                if (fields.size) fields.size.value = '';
+                if (fields.description) fields.description.value = '';
+                if (fields.imagePreview) fields.imagePreview.innerHTML = 'Preview';
+              }
 
-function confirmDelete(productName) {
-    return confirm('Apakah Anda yakin ingin menghapus produk "' + productName + '"?\n\nTindakan ini tidak dapat dibatalkan.');
-}
-</script>
+              function openCard(card) {
+                const id = card.dataset.id;
+                const name = card.dataset.name || '';
+                const price = card.dataset.price || '';
+                const stock = card.dataset.stock || '';
+                const category = card.dataset.category || '';
+                const color = card.dataset.color || '';
+                const size = card.dataset.size || '';
+                const description = card.dataset.description || '';
+                const image = card.dataset.image || '';
+
+                form.action = `/admin/products/${id}`;
+                methodInput.value = 'PATCH';
+                submitBtn.textContent = 'Update Product';
+                cancelBtn.classList.remove('hidden');
+
+                if (fields.name) fields.name.value = name;
+                if (fields.price) fields.price.value = price;
+                if (fields.category) fields.category.value = category;
+                if (fields.stock) fields.stock.value = stock;
+                if (fields.color) fields.color.value = color;
+                if (fields.size) fields.size.value = size;
+                if (fields.description) fields.description.value = description;
+                if (fields.imagePreview) {
+                  if (image) {
+                    fields.imagePreview.innerHTML = `<img src="${image}" class="h-full w-full object-cover" alt="preview">`;
+                  } else {
+                    fields.imagePreview.innerHTML = 'No Image';
+                  }
+                }
+              }
+
+              cards.forEach(card => {
+                // Ignore if card is not an element
+                if (!card) return;
+
+                // Click handler (ignore clicks on buttons/links inside the card)
+                card.addEventListener('click', function(e){
+                  if (e.target.closest('button') || e.target.closest('a') || e.target.closest('form')) return;
+                  openCard(card);
+                });
+
+                // Keyboard support
+                card.addEventListener('keydown', function(e){
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    openCard(card);
+                  }
+                });
+
+                // Prevent delete button clicks from bubbling to card
+                const deleteBtn = card.querySelector('button[type="submit"]');
+                if (deleteBtn) {
+                  deleteBtn.addEventListener('click', function(ev){
+                    ev.stopPropagation();
+                    // confirm will be handled by existing onclick attribute
+                  });
+                }
+              });
+
+              cancelBtn.addEventListener('click', function(){
+                resetForm();
+              });
+
+              // initialize
+              resetForm();
+            })();
+          </script>
+          @endpush
