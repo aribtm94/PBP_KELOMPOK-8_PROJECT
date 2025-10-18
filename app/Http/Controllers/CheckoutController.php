@@ -68,6 +68,7 @@ class CheckoutController extends Controller
                     'price'      => $i->product->price,
                     'qty'        => $i->qty,
                     'subtotal'   => $i->qty * $i->product->price,
+                    'size'       => $i->size,
                 ]);
 
                 // Validasi stock sekali lagi sebelum decrement

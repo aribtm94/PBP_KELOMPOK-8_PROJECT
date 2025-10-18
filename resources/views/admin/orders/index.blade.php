@@ -8,30 +8,7 @@
     ← Dashboard
   </a>
 </div>
-
-{{-- Statistik Ringkas --}}
-<div class="grid grid-cols-5 gap-4 mb-6">
-  <div class="bg-gray-800 text-center text-white p-4 rounded-lg shadow-md">
-    <div class="text-3xl font-bold">{{ $stats['new'] ?? 0 }}</div>
-    <div class="text-sm opacity-80">New Orders</div>
-  </div>
-  <div class="bg-gray-800 text-center text-white p-4 rounded-lg shadow-md">
-    <div class="text-3xl font-bold">{{ $stats['processed'] ?? 0 }}</div>
-    <div class="text-sm opacity-80">Processed</div>
-  </div>
-  <div class="bg-gray-800 text-center text-white p-4 rounded-lg shadow-md">
-    <div class="text-3xl font-bold">{{ $stats['sent'] ?? 0 }}</div>
-    <div class="text-sm opacity-80">Sent</div>
-  </div>
-  <div class="bg-gray-800 text-center text-white p-4 rounded-lg shadow-md">
-    <div class="text-3xl font-bold">{{ $stats['finished'] ?? 0 }}</div>
-    <div class="text-sm opacity-80">Finished</div>
-  </div>
-  <div class="bg-gray-800 text-center text-white p-4 rounded-lg shadow-md">
-    <div class="text-3xl font-bold">{{ $stats['cancelled'] ?? 0 }}</div>
-    <div class="text-sm opacity-80">Cancelled</div>
-  </div>
-</div>
+{{-- Dashboard widgets removed from orders management; stats shown only in dashboard page --}}
 
 {{-- Tabel Pesanan --}}
 <h2 class="text-xl font-semibold mb-3 text-white">Daftar Pesanan</h2>
