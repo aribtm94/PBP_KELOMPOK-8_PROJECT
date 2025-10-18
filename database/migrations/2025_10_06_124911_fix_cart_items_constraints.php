@@ -32,8 +32,17 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('cart_items', function (Blueprint $table) {
-            $table->dropColumn(['color', 'size']);
-        });
+        // Only drop columns if they exist to avoid errors during rollback when columns were removed earlier
+        if (Schema::hasColumn('cart_items', 'color')) {
+            Schema::table('cart_items', function (Blueprint $table) {
+                $table->dropColumn('color');
+            });
+        }
+
+        if (Schema::hasColumn('cart_items', 'size')) {
+            Schema::table('cart_items', function (Blueprint $table) {
+                $table->dropColumn('size');
+            });
+        }
     }
 };

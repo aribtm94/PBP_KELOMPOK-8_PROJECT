@@ -32,18 +32,35 @@ return new class extends Migration
             $table->unique(['cart_id', 'product_id', 'color', 'size'], 'cart_items_variant_unique');
         });
         
-        // Restore the data
+        // Restore the data but avoid inserting duplicates which would violate unique constraints.
+        $seen = [];
         foreach ($existingItems as $item) {
-            DB::table('cart_items')->insert([
-                'id' => $item->id,
-                'cart_id' => $item->cart_id,
-                'product_id' => $item->product_id,
-                'color' => $item->color,
-                'size' => $item->size,
-                'qty' => $item->qty,
-                'created_at' => $item->created_at,
-                'updated_at' => $item->updated_at,
-            ]);
+            // Normalize nulls to empty string to build a stable key
+            $color = $item->color ?? '';
+            $size = $item->size ?? '';
+            $key = implode('-', [$item->cart_id, $item->product_id, $color, $size]);
+            if (isset($seen[$key])) {
+                // skip duplicates
+                continue;
+            }
+            $seen[$key] = true;
+
+            try {
+                DB::table('cart_items')->insert([
+                    'id' => $item->id,
+                    'cart_id' => $item->cart_id,
+                    'product_id' => $item->product_id,
+                    'color' => $item->color,
+                    'size' => $item->size,
+                    'qty' => $item->qty,
+                    'created_at' => $item->created_at,
+                    'updated_at' => $item->updated_at,
+                ]);
+            } catch (\Exception $e) {
+                // If an insert fails due to a constraint, skip and continue restoring remaining items
+                // Useful for messy legacy data during migration.
+                continue;
+            }
         }
     }
 

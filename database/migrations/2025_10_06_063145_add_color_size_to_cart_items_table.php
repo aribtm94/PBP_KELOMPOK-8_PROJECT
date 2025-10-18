@@ -22,8 +22,16 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('cart_items', function (Blueprint $table) {
-            $table->dropColumn(['color', 'size']);
-        });
+        if (Schema::hasColumn('cart_items', 'color')) {
+            Schema::table('cart_items', function (Blueprint $table) {
+                $table->dropColumn('color');
+            });
+        }
+
+        if (Schema::hasColumn('cart_items', 'size')) {
+            Schema::table('cart_items', function (Blueprint $table) {
+                $table->dropColumn('size');
+            });
+        }
     }
 };

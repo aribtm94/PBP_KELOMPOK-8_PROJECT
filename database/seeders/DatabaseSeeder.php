@@ -12,26 +12,28 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        $admin = User::create([
-            'name' => 'Admin GayaKu',
-            'email' => 'admin@butik.local',
-            'password' => bcrypt('password'),
-            'role' => 'admin',
-        ]);
+        $admin = User::updateOrCreate(
+            ['email' => 'admin@butik.local'],
+            [
+                'name' => 'Admin GayaKu',
+                'password' => bcrypt('password'),
+                'role' => 'admin',
+            ]
+        );
 
-        $user = User::create([
-            'name' => 'User Pembeli',
-            'email' => 'user@butik.local',
-            'password' => bcrypt('password'),
-            'role' => 'user',
-        ]);
+        $user = User::updateOrCreate(
+            ['email' => 'user@butik.local'],
+            [
+                'name' => 'User Pembeli',
+                'password' => bcrypt('password'),
+                'role' => 'user',
+            ]
+        );
 
-        $categories = Category::insert([
-            ['name' => 'T-Shirts'],
-            ['name' => 'Shirts'],
-            ['name' => 'Pants'],
-            ['name' => 'Outerwear'],
-        ]);
+        $categoryNames = ['T-Shirts','Shirts','Pants','Outerwear'];
+        foreach ($categoryNames as $catName) {
+            Category::firstOrCreate(['name' => $catName]);
+        }
 
         $products = [
             [
@@ -58,7 +60,10 @@ class DatabaseSeeder extends Seeder
         ];
 
         foreach ($products as $p) {
-            Product::create($p);
+            Product::updateOrCreate(
+                ['name' => $p['name']],
+                $p
+            );
         }
 
         $cart = Cart::firstOrCreate(['user_id' => $user->id]);
