@@ -11,11 +11,12 @@
 ## Prasyarat
 
 Pastikan perangkat Anda sudah terpasang:
-- PHP 8.1+ (disarankan 8.2) beserta extension umum:
-  - ext-pdo, ext-pdo_mysql, ext-mbstring, ext-tokenizer, ext-json, ext-xml, ext-curl, ext-fileinfo
-- Composer 2.x
-- MySQL 5.7+/MariaDB 10.3+ (atau server database kompatibel)
-- Node.js 18+ dan npm (untuk development server Vite dan build aset)
+- PHP 8.4 beserta extension umum:
+  - OpenSSL, PDO, Mbstring, Tokenizer, JSON, Ctype, BCMath, Fileinfo
+- Composer 2.7
+- MySQL 5.7+
+- Node.js 18+
+- NPM 9+
 - Git
 
 Cek versi cepat:
