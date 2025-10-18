@@ -679,48 +679,59 @@ function closeCartToast() {
     @yield('content')
   </main>
 
-  <footer class="bg-[#A38560] text-[#390517] text-center py-6 rounded-t-[2rem]">
-    <div class="max-w-6xl mx-auto px-4">
-        <!-- Tentang GayaKu -->
-        <p class="text-lg font-semibold mb-4">Tentang Gayaku.id</p>
-        <p class="mb-6">Gayaku.id adalah platform e-commerce yang mendukung produk lokal UMKM dengan kualitas terbaik. Temukan berbagai pilihan fashion unik dan berkualitas dari para pengrajin Indonesia, langsung dari rumah ke gaya hidupmu.</p>
-        
-        <!-- Garis Pembatas -->
-        <hr class="border-[#390517]/30 mb-6">
-        
-        <!-- Kontak dan Social Media bersebelahan -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-6">
-            <!-- Kontak Kami -->
-            <div class="text-center">
-                <p class="font-semibold mb-2">Kontak Kami</p>
-                <p>WA: 082145676556</p>
-                <p>Email: Gayaku.id@gmail.com</p>
-            </div>
-            
-            <!-- Ikuti Kami -->
-            <div class="text-center">
-                <p class="font-semibold mb-2">Ikuti Kami</p>
-                <div class="flex justify-center gap-6">
-                    <a href="#" class="hover:opacity-75 transition-opacity">
-                        <img src="{{ asset('images/IGLogo.png') }}" alt="Instagram" class="w-8 h-8">
-                    </a>
-                    <a href="#" class="hover:opacity-75 transition-opacity">
-                        <img src="{{ asset('images/FBLogo.png') }}" alt="Facebook" class="w-8 h-8">
-                    </a>
-                    <a href="#" class="hover:opacity-75 transition-opacity">
-                        <img src="{{ asset('images/XLogo.png') }}" alt="Twitter" class="w-8 h-8">
-                    </a>
-                    <a href="#" class="hover:opacity-75 transition-opacity">
-                        <img src="{{ asset('images/TTLogo.png') }}" alt="TikTok" class="w-8 h-8">
-                    </a>
-                </div>
-            </div>
-        </div>
+    @php
+      // Deteksi apakah halaman berada di dalam /admin/*
+      $isAdminPage = request()->is('admin/*');
+  @endphp
 
-        <!-- Copyright -->
-        <p>© Gayaku.id 2025, Company</p>
-    </div>
-  </footer>
+  @if (!$isAdminPage)
+      <footer class="bg-[#A38560] text-[#390517] text-center py-6 rounded-t-[2rem]">
+          <div class="max-w-6xl mx-auto px-4">
+              <!-- Tentang GayaKu -->
+              <p class="text-lg font-semibold mb-4">Tentang Gayaku.id</p>
+              <p class="mb-6">
+                  Gayaku.id adalah platform e-commerce yang mendukung produk lokal UMKM dengan kualitas terbaik.
+                  Temukan berbagai pilihan fashion unik dan berkualitas dari para pengrajin Indonesia,
+                  langsung dari rumah ke gaya hidupmu.
+              </p>
+              
+              <!-- Garis Pembatas -->
+              <hr class="border-[#390517]/30 mb-6">
+              
+              <!-- Kontak dan Social Media -->
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-6">
+                  <!-- Kontak Kami -->
+                  <div class="text-center">
+                      <p class="font-semibold mb-2">Kontak Kami</p>
+                      <p>WA: 082145676556</p>
+                      <p>Email: Gayaku.id@gmail.com</p>
+                  </div>
+                  
+                  <!-- Ikuti Kami -->
+                  <div class="text-center">
+                      <p class="font-semibold mb-2">Ikuti Kami</p>
+                      <div class="flex justify-center gap-6">
+                          <a href="#" class="hover:opacity-75 transition-opacity">
+                              <img src="{{ asset('images/IGLogo.png') }}" alt="Instagram" class="w-8 h-8">
+                          </a>
+                          <a href="#" class="hover:opacity-75 transition-opacity">
+                              <img src="{{ asset('images/FBLogo.png') }}" alt="Facebook" class="w-8 h-8">
+                          </a>
+                          <a href="#" class="hover:opacity-75 transition-opacity">
+                              <img src="{{ asset('images/XLogo.png') }}" alt="Twitter" class="w-8 h-8">
+                          </a>
+                          <a href="#" class="hover:opacity-75 transition-opacity">
+                              <img src="{{ asset('images/TTLogo.png') }}" alt="TikTok" class="w-8 h-8">
+                          </a>
+                      </div>
+                  </div>
+              </div>
+
+              <!-- Copyright -->
+              <p>© Gayaku.id 2025, Company</p>
+          </div>
+      </footer>
+  @endif
 
 </body>
 @stack('scripts')
