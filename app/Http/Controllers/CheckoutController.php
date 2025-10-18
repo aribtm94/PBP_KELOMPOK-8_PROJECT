@@ -28,6 +28,9 @@ class CheckoutController extends Controller
             'receiver_name' => 'required|string|max:100',
             'address_text'  => 'required|string|max:500',
             'phone'         => 'nullable|string|max:20',
+            'payment_method' => 'required|string|in:qris,cod,transfer',
+            'delivery_method' => 'nullable|string|in:same-day,express,regular',
+            'delivery_fee' => 'nullable|numeric|min:0',
         ]);
 
         $user = auth()->user();
@@ -56,7 +59,7 @@ class CheckoutController extends Controller
                 'receiver_name'    => $data['receiver_name'],
                 'receiver_address' => $data['address_text'],
                 'receiver_phone'   => $data['phone'] ?? '-',
-                'payment_method'   => 'transfer',
+                'payment_method'   => $data['payment_method'],
                 'status'           => 'baru',
                 'total'            => $total,
             ]);
