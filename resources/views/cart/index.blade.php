@@ -1,469 +1,319 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shopping Cart - GayaKu.id</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'forest-green': '#16302B',
-                        'light-brown': '#D6C5A1',
-                        'medium-brown': '#A38560',
-                        'dark-maroon': '#390517',
-                        'light-gray': '#E0E0E0',
-                        'dark-green': '#03110D'
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        /* Custom scrollbar untuk kotak coklat */
-        .cart-container::-webkit-scrollbar {
-            width: 8px;
-        }
-        .cart-container::-webkit-scrollbar-track {
-            background: #A38560;
-            border-radius: 10px;
-        }
-        .cart-container::-webkit-scrollbar-thumb {
-            background: #390517;
-            border-radius: 10px;
-        }
-        .cart-container::-webkit-scrollbar-thumb:hover {
-            background: #03110D;
-        }
-        
-        /* Custom input centering */
-        .qty-input {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            line-height: 1;
-        }
-        
-        /* Hide number input arrows */
-        .qty-input::-webkit-outer-spin-button,
-        .qty-input::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-        
-        .qty-input[type=number] {
-            -moz-appearance: textfield;
-        }
-    </style>
-</head>
-<body class="m-0 p-0 bg-forest-green h-screen overflow-hidden font-sans">
-    <div class="cart-container bg-light-brown m-2 sm:m-5 rounded-2xl p-4 sm:p-8 h-[calc(100vh-1rem)] sm:h-[calc(100vh-2.5rem)] overflow-y-auto">
-        <div class="max-w-7xl mx-auto">
-            <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 sm:mb-8 text-left text-dark-maroon">Shopping Cart</h1>
+@extends('layouts.app')
 
-            <div class="flex flex-col lg:flex-row justify-center gap-4 lg:gap-8">
-                    <!-- Produk Table - Kotak Kiri dengan Rounded -->
-                    <div class="w-full lg:w-3/4 bg-white rounded-2xl overflow-hidden shadow-lg">
-                        <!-- Mobile: Stack layout -->
-                        <div class="block sm:hidden">
-                            @if($cart->items->isEmpty())
-                                <div class="p-8 text-center text-dark-green">
-                                    <div class="text-lg font-semibold mb-2">Your cart is empty</div>
-                                    <p class="text-sm">Add some products to get started!</p>
-                                </div>
-                            @else
+@section('content')
+@php $availableSizes = ['S','M','L','XL','XXL']; @endphp
+
+<div class="min-h-screen bg-[#FBF2E3] py-8">
+    <div class="max-w-5xl mx-auto px-4">
+        <div class="bg-transparent rounded-2xl overflow-hidden">
+            <div class="bg-transparent px-8 py-6">
+                <h1 class="text-5xl font-bold text-[#390517]">Shopping Cart</h1>
+            </div>
+
+            <div class="px-8 pb-10">
+                @if($cart->items->isEmpty())
+                    <div class="text-center py-16">
+                        <div class="w-24 h-24 mx-auto mb-6 bg-[#390517]/20 rounded-full flex items-center justify-center">
+                            <svg class="w-12 h-12 text-[#390517]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4"></path>
+                                <circle cx="9" cy="19" r="2"></circle>
+                                <circle cx="17" cy="19" r="2"></circle>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-semibold text-[#390517] mb-2">Your cart is empty</h3>
+                        <p class="text-[#390517] opacity-70 mb-6">Add some products to get started!</p>
+                        <a href="{{ url('/') }}" class="bg-[#390517] text-white px-8 py-3 rounded-lg font-medium hover:bg-[#2a0411] transition-colors">Start Shopping</a>
+                    </div>
+                @else
+                    <div class="grid gap-6 lg:grid-cols-[2fr_1fr]">
+                        <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+                            <div class="block sm:hidden">
                                 @foreach($cart->items as $i)
-                                <div class="p-4 border-b border-light-gray">
-                                    <div class="space-y-2">
-                                        <div class="font-semibold text-dark-green">{{ $i->product->name }}</div>
-                                        
-                                        <!-- Size Row -->
-                                        <div class="flex items-center gap-2">
-                                            <span class="text-sm text-dark-green">Size:</span>
-                                            <span class="text-sm font-semibold text-dark-green">{{ strtoupper($i->size ?? 'N/A') }}</span>
-                                        </div>
-                                        
-                                        <div class="flex items-center justify-between">
-                                            <span class="text-sm text-dark-green">Price: Rp {{ number_format($i->product->price, 0, ',', '.') }}</span>
-                                        </div>
-                                        <div class="flex items-center justify-between">
+                                    <div class="p-4 border-b border-[#E0E0E0]">
+                                        <div class="space-y-3">
+                                            <div class="font-semibold text-[#03110D]">{{ $i->product->name }}</div>
                                             <div class="flex items-center gap-2">
-                                                <button onclick="decreaseQty({{ $i->id }})" class="bg-light-gray text-dark-maroon px-3 py-1 rounded hover:bg-gray-300 font-bold">-</button>
-                                                <input type="number" id="qty-{{ $i->id }}" value="{{ $i->qty }}" min="1" class="qty-input border border-dark-maroon rounded-lg w-16 h-10 text-center text-dark-green focus:outline-none focus:ring-2 focus:ring-medium-brown font-semibold">
-                                                <button onclick="increaseQty({{ $i->id }})" class="bg-light-gray text-dark-maroon px-3 py-1 rounded hover:bg-gray-300 font-bold">+</button>
+                                                <label class="text-sm text-[#03110D]" for="mobile-size-{{ $i->id }}">Size:</label>
+                                                <select id="mobile-size-{{ $i->id }}" data-size-select="{{ $i->id }}" onchange="changeSize({{ $i->id }}, this.value)" class="bg-[#E0E0E0] text-[#03110D] text-sm font-semibold px-3 py-1 rounded focus:outline-none focus:ring-2 focus:ring-[#A38560] w-28">
+                                                    @foreach($availableSizes as $size)
+                                                        <option value="{{ $size }}" @selected($i->size === $size)>{{ $size }}</option>
+                                                    @endforeach
+                                                </select>
                                             </div>
-                                            <div class="text-right">
-                                                <div class="font-semibold text-dark-green" data-total-{{ $i->id }}>Rp {{ number_format($i->qty * $i->product->price, 0, ',', '.') }}</div>
-                                                <form method="POST" action="{{ route('cart.remove', $i)}}" class="mt-1">
-                                                    @method('DELETE') @csrf
-                                                    <button class="bg-red-500 text-white px-2 py-1 rounded text-xs hover:bg-red-600 transition-colors">Remove</button>
-                                                </form>
+                                            <div class="flex items-center justify-between text-sm text-[#03110D]">
+                                                <span>Price</span>
+                                                <span>Rp {{ number_format($i->product->price, 0, ',', '.') }}</span>
+                                            </div>
+                                            <div class="flex items-center justify-between">
+                                                <div class="flex items-center gap-2">
+                                                    <button onclick="decreaseQty({{ $i->id }})" class="bg-[#E0E0E0] text-[#390517] px-3 py-1 rounded hover:bg-gray-300 font-bold">-</button>
+                                                    <input type="number" id="qty-{{ $i->id }}" value="{{ $i->qty }}" min="1" class="qty-input border border-[#390517] rounded-lg w-16 h-10 text-center text-[#03110D] focus:outline-none focus:ring-2 focus:ring-[#A38560] font-semibold">
+                                                    <button onclick="increaseQty({{ $i->id }})" class="bg-[#E0E0E0] text-[#390517] px-3 py-1 rounded hover:bg-gray-300 font-bold">+</button>
+                                                </div>
+                                                <div class="text-right">
+                                                    <div class="font-semibold text-[#03110D]" data-total-{{ $i->id }}>Rp {{ number_format($i->qty * $i->product->price, 0, ',', '.') }}</div>
+                                                    <form method="POST" action="{{ route('cart.remove', $i)}}" class="mt-1">
+                                                        @method('DELETE') @csrf
+                                                        <button class="bg-red-500 text-white px-2 py-1 rounded text-xs hover:bg-red-600 transition-colors">Remove</button>
+                                                    </form>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            @endforeach
-                            @endif
+                                @endforeach
+                            </div>
+
+                            <div class="hidden sm:block overflow-x-auto">
+                                <table class="w-full min-w-[720px]">
+                                    <thead class="bg-[#A38560]">
+                                        <tr>
+                                            <th class="p-4 text-left text-[#E0E0E0] text-sm">Product</th>
+                                            <th class="p-4 text-center text-[#E0E0E0] text-sm w-[7.5rem]">Size</th>
+                                            <th class="p-4 text-center text-[#E0E0E0] text-sm">Qty</th>
+                                            <th class="p-4 text-center text-[#E0E0E0] text-sm">Price</th>
+                                            <th class="p-4 text-center text-[#E0E0E0] text-sm">Total</th>
+                                            <th class="p-4 text-center text-[#E0E0E0] text-sm">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($cart->items as $i)
+                                            <tr class="border-t border-[#E0E0E0]">
+                                                <td class="p-4 text-[#03110D] text-sm">{{ $i->product->name }}</td>
+                                                <td class="p-4 text-center text-[#03110D] text-sm font-semibold w-[7.5rem]">
+                                                    <select id="desktop-size-{{ $i->id }}" data-size-select="{{ $i->id }}" onchange="changeSize({{ $i->id }}, this.value)" class="bg-[#E0E0E0] text-[#03110D] text-sm font-semibold px-3 py-1 rounded focus:outline-none focus:ring-2 focus:ring-[#A38560] w-full min-w-[6.5rem]">
+                                                        @foreach($availableSizes as $size)
+                                                            <option value="{{ $size }}" @selected($i->size === $size)>{{ $size }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </td>
+                                                <td class="p-4 text-center text-[#03110D] text-sm">
+                                                    <div class="flex items-center justify-center gap-2">
+                                                        <button onclick="decreaseQty({{ $i->id }})" class="bg-[#E0E0E0] text-[#390517] px-3 py-1 rounded hover:bg-gray-300 font-bold">-</button>
+                                                        <input type="number" id="qty-{{ $i->id }}" value="{{ $i->qty }}" min="1" class="qty-input border border-[#390517] rounded-lg w-16 h-10 text-center text-[#03110D] focus:outline-none focus:ring-2 focus:ring-[#A38560] font-semibold">
+                                                        <button onclick="increaseQty({{ $i->id }})" class="bg-[#E0E0E0] text-[#390517] px-3 py-1 rounded hover:bg-gray-300 font-bold">+</button>
+                                                    </div>
+                                                </td>
+                                                <td class="p-4 text-center text-[#03110D] text-sm">Rp {{ number_format($i->product->price, 0, ',', '.') }}</td>
+                                                <td class="p-4 text-center text-[#03110D] text-sm" data-total-{{ $i->id }}>Rp {{ number_format($i->qty * $i->product->price, 0, ',', '.') }}</td>
+                                                <td class="p-4 text-center">
+                                                    <form method="POST" action="{{ route('cart.remove', $i)}}">
+                                                        @method('DELETE') @csrf
+                                                        <button class="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600 transition-colors text-xs">Remove</button>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
 
-                        <!-- Desktop: Table layout -->
-                        <div class="hidden sm:block overflow-x-auto">
-                            <table class="w-full min-w-[800px]">
-                                <thead class="bg-medium-brown">
-                                    <tr>
-                                        <th class="p-3 sm:p-4 text-left text-light-gray text-sm sm:text-base">Product</th>
-                                        <th class="p-3 sm:p-4 text-center text-light-gray text-sm sm:text-base">Size</th>
-                                        <th class="p-3 sm:p-4 text-center text-light-gray text-sm sm:text-base">Qty</th>
-                                        <th class="p-3 sm:p-4 text-center text-light-gray text-sm sm:text-base">Price</th>
-                                        <th class="p-3 sm:p-4 text-center text-light-gray text-sm sm:text-base">Total</th>
-                                        <th class="p-3 sm:p-4 text-center text-light-gray text-sm sm:text-base">Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                @if($cart->items->isEmpty())
-                                    <tr>
-                                        <td colspan="6" class="p-8 text-center text-dark-green">
-                                            <div class="text-lg font-semibold mb-2">Your cart is empty</div>
-                                            <p class="text-sm">Add some products to get started!</p>
-                                        </td>
-                                    </tr>
-                                @else
-                                    @foreach($cart->items as $i)
-                                    <tr class="border-t border-light-gray">
-                                        <td class="p-3 sm:p-4 text-left text-dark-green text-sm sm:text-base">{{ $i->product->name }}</td>
-                                        <td class="p-3 sm:p-4 text-center text-dark-green text-sm sm:text-base font-semibold">
-                                            {{ strtoupper($i->size ?? 'N/A') }}
-                                        </td>
-                                        <td class="p-3 sm:p-4 text-center text-dark-green">
-                                            <div class="flex items-center justify-center gap-1 sm:gap-2">
-                                                <button onclick="decreaseQty({{ $i->id }})" class="bg-light-gray text-dark-maroon px-2 sm:px-3 py-1 rounded hover:bg-gray-300 font-bold text-sm sm:text-base">-</button>
-                                                <input type="number" id="qty-{{ $i->id }}" value="{{ $i->qty }}" min="1" class="qty-input border border-dark-maroon rounded-lg w-12 sm:w-16 h-8 sm:h-10 text-center text-dark-green focus:outline-none focus:ring-2 focus:ring-medium-brown font-semibold text-sm sm:text-base">
-                                                <button onclick="increaseQty({{ $i->id }})" class="bg-light-gray text-dark-maroon px-2 sm:px-3 py-1 rounded hover:bg-gray-300 font-bold text-sm sm:text-base">+</button>
-                                            </div>
-                                        </td>
-                                        <td class="p-3 sm:p-4 text-center text-dark-green text-sm sm:text-base">Rp {{ number_format($i->product->price, 0, ',', '.') }}</td>
-                                        <td class="p-3 sm:p-4 text-center text-dark-green text-sm sm:text-base" data-total-{{ $i->id }}>Rp {{ number_format($i->qty * $i->product->price, 0, ',', '.') }}</td>
-                                        <td class="p-3 sm:p-4 text-center">
-                                            <form method="POST" action="{{ route('cart.remove', $i)}}">
-                                                @method('DELETE') @csrf
-                                                <button class="bg-red-500 text-white px-2 sm:px-3 py-1 rounded-lg hover:bg-red-600 transition-colors text-xs sm:text-sm">Remove</button>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                                @endif
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    
-                    <!-- Order Summary - Kotak Kanan dengan Rounded -->
-                    <div class="w-full lg:w-1/4 bg-[#A38560] p-4 sm:p-6 rounded-2xl shadow-lg lg:sticky lg:top-5 h-fit min-h-[300px]">
-                        <h3 class="font-bold text-lg sm:text-xl mb-4 text-center text-dark-maroon">Order Summary</h3>
-                        
-                        <div class="space-y-2 sm:space-y-3 mb-4">
-                            <div class="flex justify-between text-dark-maroon text-sm sm:text-base">
-                                <span>Sub Total</span>
-                                <span data-subtotal>Rp {{ number_format($cart->total() ?? 0, 0, ',', '.') }}</span>
-                            </div>
-                        </div>
-                        
-                        <div class="border-t-2 border-dark-maroon pt-3 mb-4 sm:mb-6">
-                            <div class="flex justify-between font-bold text-base sm:text-lg text-dark-maroon">
-                                <span>Total</span>
-                                <span id="final-total" data-final-total>Rp {{ number_format($cart->total() ?? 0, 0, ',', '.') }}</span>
-                            </div>
-                        </div>
-                        
-                        <div class="space-y-2 sm:space-y-3">
-                            @if($cart->items->isEmpty())
-                                <div class="block w-full bg-gray-400 text-gray-600 text-center px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold text-sm sm:text-base cursor-not-allowed">
-                                    Checkout Now
+                        <div class="bg-[#A38560] p-6 rounded-2xl shadow-lg h-fit lg:sticky lg:top-24">
+                            <h3 class="font-bold text-lg mb-4 text-center text-[#390517]">Order Summary</h3>
+                            <div class="space-y-2 mb-4">
+                                <div class="flex justify-between text-[#390517] text-sm">
+                                    <span>Sub Total</span>
+                                    <span data-subtotal>Rp {{ number_format($cart->total() ?? 0, 0, ',', '.') }}</span>
                                 </div>
-                            @else
-                                <a href="{{ route('checkout.show') }}" id="checkout-btn" class="block w-full bg-[#390517] text-light-gray text-center px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity text-sm sm:text-base">
+                            </div>
+                            <div class="border-t-2 border-[#390517] pt-3 mb-6">
+                                <div class="flex justify-between font-bold text-base text-[#390517]">
+                                    <span>Total</span>
+                                    <span data-final-total>Rp {{ number_format($cart->total() ?? 0, 0, ',', '.') }}</span>
+                                </div>
+                            </div>
+                            <div class="space-y-3">
+                                <a href="{{ route('checkout.show') }}" class="block w-full bg-[#390517] text-[#E0E0E0] text-center px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity text-sm">
                                     Checkout Now
                                 </a>
-                            @endif
-                            <a href="{{ url('/') }}" class="block w-full border-2 border-dark-maroon text-center px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold text-dark-maroon hover:bg-gray-50 transition-colors text-sm sm:text-base">
-                                Continue Shopping
-                            </a>
+                                <a href="{{ url('/') }}" class="block w-full border-2 border-[#390517] text-center px-6 py-3 rounded-lg font-semibold text-[#390517] hover:bg-white transition-colors text-sm">
+                                    Continue Shopping
+                                </a>
+                            </div>
                         </div>
                     </div>
-                </div>
-                
-                <!-- Update Cart Button - Kembali ke bawah tabel sebelah kiri -->
-                @if(!$cart->items->isEmpty())
-                <div class="mt-4">
-                    <button onclick="updateAllItems()" class="bg-medium-brown text-light-gray px-4 py-2 rounded-lg font-semibold hover:opacity-90 transition-opacity text-sm sm:text-base">
-                        Update Cart
-                    </button>
-                </div>
                 @endif
             </div>
         </div>
     </div>
+</div>
 
-    <script>
-        const cartTotal = {{ $cart->total() }};
+<style>
+    .qty-input {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        line-height: 1;
+    }
 
-        // Ensure all quantity inputs are not readonly on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            // Handle back button navigation to prevent flash messages
-            if (window.performance && window.performance.navigation.type === 2) {
-                // This is a back navigation, reload to clear flash messages
-                window.location.reload(true);
-                return; // Exit early
-            }
+    .qty-input::-webkit-outer-spin-button,
+    .qty-input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
 
-            console.log('Cart page loaded');
-            
-            // Force remove readonly from all inputs multiple times
-            setTimeout(() => {
-                const qtyInputs = document.querySelectorAll('.qty-input, input[id*="qty-"]');
-                qtyInputs.forEach(input => {
-                    input.removeAttribute('readonly');
-                    input.readOnly = false;
-                    input.disabled = false;
-                    console.log('Removed readonly from:', input.id, 'Current value:', input.value);
-                });
-            }, 100);
-            
-            // Also remove readonly every 500ms for the first 3 seconds (in case of dynamic loading)
-            let attempts = 0;
-            const interval = setInterval(() => {
-                const qtyInputs = document.querySelectorAll('.qty-input, input[id*="qty-"]');
-                qtyInputs.forEach(input => {
-                    if (input.hasAttribute('readonly') || input.readOnly) {
-                        input.removeAttribute('readonly');
-                        input.readOnly = false;
-                        console.log('Force removed readonly from:', input.id);
-                    }
-                });
-                attempts++;
-                if (attempts >= 6) clearInterval(interval); // Stop after 3 seconds
-            }, 500);
-            
-            // Debug button listeners
-            document.querySelectorAll('[onclick*="increaseQty"]').forEach(btn => {
-                console.log('Found increase button:', btn);
-            });
-            
-            document.querySelectorAll('[onclick*="decreaseQty"]').forEach(btn => {
-                console.log('Found decrease button:', btn);
-            });
+    .qty-input[type=number] {
+        -moz-appearance: textfield;
+    }
+</style>
 
-            // Handle pageshow event for back button
-            window.addEventListener('pageshow', function(event) {
-                // Check if page was loaded from cache (back button)
-                if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
-                    // Refresh the page to clear any flash messages
-                    window.location.reload(true);
-                }
-            });
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const qtyInputs = document.querySelectorAll('.qty-input, input[id*="qty-"]');
+        qtyInputs.forEach(input => {
+            input.removeAttribute('readonly');
+            input.readOnly = false;
+            input.disabled = false;
         });
 
-
-
-        function increaseQty(itemId) {
-            // Get current value
-            const qtyInput = document.getElementById('qty-' + itemId);
-            if (!qtyInput) return;
-            
-            let newQty = parseInt(qtyInput.value) + 1;
-            
-            // Update IMMEDIATELY with force
-            qtyInput.value = newQty;
-            qtyInput.defaultValue = newQty;
-            
-            // Force browser to re-render the input
-            qtyInput.style.display = 'none';
-            qtyInput.offsetHeight; // Trigger reflow
-            qtyInput.style.display = '';
-            
-            // Also update all matching inputs (mobile + desktop)
-            document.querySelectorAll(`#qty-${itemId}`).forEach(input => {
-                input.value = newQty;
-                input.defaultValue = newQty;
-            });
-            
-            console.log('Updated qty to:', newQty);
-            
-            // Update totals and database
-            updateCartDisplay();
-            updateSingleItemAsync(itemId, newQty).catch(console.error);
-        }
-
-        function decreaseQty(itemId) {
-            // Get current value
-            const qtyInput = document.getElementById('qty-' + itemId);
-            if (!qtyInput) return;
-            
-            let currentQty = parseInt(qtyInput.value);
-            if (currentQty <= 1) return; // Don't go below 1
-            
-            let newQty = currentQty - 1;
-            
-            // Update IMMEDIATELY with force
-            qtyInput.value = newQty;
-            qtyInput.defaultValue = newQty;
-            
-            // Force browser to re-render the input
-            qtyInput.style.display = 'none';
-            qtyInput.offsetHeight; // Trigger reflow
-            qtyInput.style.display = '';
-            
-            // Also update all matching inputs (mobile + desktop)
-            document.querySelectorAll(`#qty-${itemId}`).forEach(input => {
-                input.value = newQty;
-                input.defaultValue = newQty;
-            });
-            
-            console.log('Updated qty to:', newQty);
-            
-            // Update totals and database
-            updateCartDisplay();
-            updateSingleItemAsync(itemId, newQty).catch(console.error);
-        }
-
-        function updateCartDisplay() {
-            // Calculate new totals from current displayed quantities
-            let newSubtotal = 0;
-            
-            @foreach($cart->items as $i)
-                const qty{{ $i->id }} = parseInt(document.getElementById('qty-{{ $i->id }}').value);
-                const price{{ $i->id }} = {{ $i->product->price }};
-                const total{{ $i->id }} = qty{{ $i->id }} * price{{ $i->id }};
-                newSubtotal += total{{ $i->id }};
-                
-                // Update individual total display
-                const totalElements{{ $i->id }} = document.querySelectorAll('[data-total-{{ $i->id }}]');
-                totalElements{{ $i->id }}.forEach(el => {
-                    el.textContent = 'Rp ' + total{{ $i->id }}.toLocaleString('id-ID');
-                });
-            @endforeach
-            
-            // Update subtotal
-            const subtotalElements = document.querySelectorAll('[data-subtotal]');
-            subtotalElements.forEach(el => {
-                el.textContent = 'Rp ' + newSubtotal.toLocaleString('id-ID');
-            });
-            
-            // Update final total
-            const finalTotal = newSubtotal;
-            const finalTotalElements = document.querySelectorAll('[data-final-total]');
-            finalTotalElements.forEach(el => {
-                el.textContent = 'Rp ' + finalTotal.toLocaleString('id-ID');
-            });
-        }
-
-        async function updateAllItems() {
-            const button = document.querySelector('button[onclick="updateAllItems()"]');
-            button.disabled = true;
-            button.textContent = 'Updating...';
-            
-            const items = [];
-            @foreach($cart->items as $i)
-                items.push({
-                    id: {{ $i->id }},
-                    qty: document.getElementById('qty-{{ $i->id }}').value
-                });
-            @endforeach
-            
-            // Update items sequentially
-            for (let i = 0; i < items.length; i++) {
-                await updateSingleItemAsync(items[i].id, items[i].qty);
-                // Small delay between updates
-                await new Promise(resolve => setTimeout(resolve, 200));
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+                window.location.reload(true);
             }
-            
-            // Reload page after all updates
-            window.location.reload();
-        }
+        });
+    });
 
-        function updateSingleItemAsync(itemId, qty) {
-            return new Promise((resolve, reject) => {
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = '{{ route("cart.update", ":id") }}'.replace(':id', itemId);
-                form.style.display = 'none';
-                
-                const methodInput = document.createElement('input');
-                methodInput.type = 'hidden';
-                methodInput.name = '_method';
-                methodInput.value = 'PATCH';
-                
-                const tokenInput = document.createElement('input');
-                tokenInput.type = 'hidden';
-                tokenInput.name = '_token';
-                tokenInput.value = '{{ csrf_token() }}';
-                
-                const qtyInput = document.createElement('input');
-                qtyInput.type = 'hidden';
-                qtyInput.name = 'qty';
-                qtyInput.value = qty;
-                
-                form.appendChild(methodInput);
-                form.appendChild(tokenInput);
-                form.appendChild(qtyInput);
-                
-                // Create iframe for submission to avoid page redirect
-                const iframe = document.createElement('iframe');
-                iframe.style.display = 'none';
-                iframe.name = 'updateFrame' + itemId;
-                form.target = iframe.name;
-                
-                document.body.appendChild(iframe);
-                document.body.appendChild(form);
-                
-                iframe.onload = function() {
-                    document.body.removeChild(iframe);
-                    document.body.removeChild(form);
-                    resolve();
-                };
-                
-                form.submit();
+    function getQtyValue(itemId) {
+        const qtyInput = document.getElementById('qty-' + itemId);
+        if (!qtyInput) {
+            return 1;
+        }
+        const parsed = parseInt(qtyInput.value, 10);
+        return Number.isNaN(parsed) ? 1 : parsed;
+    }
+
+    function getSelectedSize(itemId) {
+        const select = document.querySelector(`[data-size-select="${itemId}"]`);
+        return select ? select.value : null;
+    }
+
+    function syncSizeSelects(itemId, newSize) {
+        document.querySelectorAll(`[data-size-select="${itemId}"]`).forEach(select => {
+            if (select.value !== newSize) {
+                select.value = newSize;
+            }
+        });
+    }
+
+    function changeSize(itemId, newSize) {
+        syncSizeSelects(itemId, newSize);
+        updateSingleItemAsync(itemId, getQtyValue(itemId), newSize).catch(console.error);
+    }
+
+    function increaseQty(itemId) {
+        const qtyInput = document.getElementById('qty-' + itemId);
+        if (!qtyInput) return;
+
+        let newQty = parseInt(qtyInput.value) + 1;
+        qtyInput.value = newQty;
+        qtyInput.defaultValue = newQty;
+
+        document.querySelectorAll(`#qty-${itemId}`).forEach(input => {
+            input.value = newQty;
+            input.defaultValue = newQty;
+        });
+
+        updateCartDisplay();
+        updateSingleItemAsync(itemId, newQty, getSelectedSize(itemId)).catch(console.error);
+    }
+
+    function decreaseQty(itemId) {
+        const qtyInput = document.getElementById('qty-' + itemId);
+        if (!qtyInput) return;
+
+        let currentQty = parseInt(qtyInput.value);
+        if (currentQty <= 1) return;
+
+        let newQty = currentQty - 1;
+        qtyInput.value = newQty;
+        qtyInput.defaultValue = newQty;
+
+        document.querySelectorAll(`#qty-${itemId}`).forEach(input => {
+            input.value = newQty;
+            input.defaultValue = newQty;
+        });
+
+        updateCartDisplay();
+        updateSingleItemAsync(itemId, newQty, getSelectedSize(itemId)).catch(console.error);
+    }
+
+    function updateCartDisplay() {
+        let newSubtotal = 0;
+
+        @foreach($cart->items as $i)
+            const qty{{ $i->id }} = parseInt(document.getElementById('qty-{{ $i->id }}').value);
+            const price{{ $i->id }} = {{ $i->product->price }};
+            const total{{ $i->id }} = qty{{ $i->id }} * price{{ $i->id }};
+            newSubtotal += total{{ $i->id }};
+
+            const totalElements{{ $i->id }} = document.querySelectorAll('[data-total-{{ $i->id }}]');
+            totalElements{{ $i->id }}.forEach(el => {
+                el.textContent = 'Rp ' + total{{ $i->id }}.toLocaleString('id-ID');
             });
-        }
+        @endforeach
 
-        function updateSingleItem(itemId) {
-            const qtyInput = document.getElementById('qty-' + itemId);
-            const qty = qtyInput.value;
-            
+        const subtotalElements = document.querySelectorAll('[data-subtotal]');
+        subtotalElements.forEach(el => {
+            el.textContent = 'Rp ' + newSubtotal.toLocaleString('id-ID');
+        });
+
+        const finalTotalElements = document.querySelectorAll('[data-final-total]');
+        finalTotalElements.forEach(el => {
+            el.textContent = 'Rp ' + newSubtotal.toLocaleString('id-ID');
+        });
+    }
+
+    function updateSingleItemAsync(itemId, qty, size = null) {
+        return new Promise((resolve, reject) => {
             const form = document.createElement('form');
             form.method = 'POST';
             form.action = '{{ route("cart.update", ":id") }}'.replace(':id', itemId);
-            
+            form.style.display = 'none';
+
             const methodInput = document.createElement('input');
             methodInput.type = 'hidden';
             methodInput.name = '_method';
             methodInput.value = 'PATCH';
-            
+
             const tokenInput = document.createElement('input');
             tokenInput.type = 'hidden';
             tokenInput.name = '_token';
             tokenInput.value = '{{ csrf_token() }}';
-            
-            const qtyFormInput = document.createElement('input');
-            qtyFormInput.type = 'hidden';
-            qtyFormInput.name = 'qty';
-            qtyFormInput.value = qty;
-            
+
+            const qtyInput = document.createElement('input');
+            qtyInput.type = 'hidden';
+            qtyInput.name = 'qty';
+            qtyInput.value = qty;
+
             form.appendChild(methodInput);
             form.appendChild(tokenInput);
-            form.appendChild(qtyFormInput);
-            
+            form.appendChild(qtyInput);
+
+            if (size) {
+                const sizeInput = document.createElement('input');
+                sizeInput.type = 'hidden';
+                sizeInput.name = 'size';
+                sizeInput.value = size;
+                form.appendChild(sizeInput);
+            }
+
+            const iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            iframe.name = 'updateFrame' + itemId;
+            form.target = iframe.name;
+
+            document.body.appendChild(iframe);
             document.body.appendChild(form);
+
+            iframe.onload = function() {
+                document.body.removeChild(iframe);
+                document.body.removeChild(form);
+                resolve();
+            };
+
             form.submit();
-        }
-
-
-
-
-
-
-    </script>
-</body>
-</html>
+        });
+    }
+</script>
+@endsection
+            

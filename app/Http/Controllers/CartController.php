@@ -63,13 +63,44 @@ class CartController extends Controller
     {
         abort_unless($item->cart->user_id === auth()->id(), 403);
 
-        $data = $r->validate(['qty' => 'required|integer|min:1']);
-        if ($data['qty'] > $item->product->stock) {
+        $validated = $r->validate([
+            'qty'  => 'sometimes|required|integer|min:1',
+            'size' => 'sometimes|required|string|in:S,M,L,XL,XXL',
+        ]);
+
+        $newQty = $validated['qty'] ?? $item->qty;
+        if ($newQty > $item->product->stock) {
             return back()->with('error', 'Qty melebihi stok.');
         }
 
-        $item->update(['qty' => $data['qty']]);
-        return back()->with('success', 'Jumlah diperbarui.');
+        $newSize = $validated['size'] ?? $item->size;
+
+        if ($newSize !== $item->size) {
+            // Merge with sibling item that already uses the requested size
+            $existing = $item->cart->items()
+                ->where('product_id', $item->product_id)
+                ->where('size', $newSize)
+                ->first();
+
+            if ($existing) {
+                $combinedQty = $existing->qty + $newQty;
+                if ($combinedQty > $item->product->stock) {
+                    return back()->with('error', 'Qty melebihi stok.');
+                }
+
+                $existing->update(['qty' => $combinedQty]);
+                $item->delete();
+
+                return back()->with('success', 'Item diperbarui.');
+            }
+
+            $item->size = $newSize;
+        }
+
+        $item->qty = $newQty;
+        $item->save();
+
+        return back()->with('success', 'Item diperbarui.');
     }
 
     public function remove(CartItem $item)
