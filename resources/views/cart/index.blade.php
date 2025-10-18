@@ -103,7 +103,7 @@
                                                 </td>
                                                 <td class="px-4 py-4 text-center text-[#03110D] text-sm whitespace-nowrap tabular-nums">Rp&nbsp;{{ number_format($i->product->price, 0, ',', '.') }}</td>
                                                 <td class="px-4 py-4 text-center text-[#03110D] text-sm whitespace-nowrap tabular-nums" data-total-{{ $i->id }}>Rp&nbsp;{{ number_format($i->qty * $i->product->price, 0, ',', '.') }}</td>
-                                                <td class="px-4 py-4 text-center align-top">
+                                                <td class="px-4 py-4 text-center align-middle">
                                                     <form method="POST" action="{{ route('cart.remove', $i)}}">
                                                         @method('DELETE') @csrf
                                                         <button class="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600 transition-colors text-xs">Remove</button>
