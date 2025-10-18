@@ -4,7 +4,7 @@
 @php $availableSizes = ['S','M','L','XL','XXL']; @endphp
 
 <div class="min-h-screen bg-[#FBF2E3] py-8">
-    <div class="max-w-6xl mx-auto px-4">
+    <div class="max-w-6xl xl:max-w-7xl mx-auto px-2 sm:px-4">
         <div class="bg-transparent rounded-2xl overflow-hidden">
             <div class="bg-transparent px-8 py-6">
                 <h1 class="text-5xl font-bold text-[#390517]">Shopping Cart</h1>
@@ -25,7 +25,7 @@
                         <a href="{{ url('/') }}" class="bg-[#390517] text-white px-8 py-3 rounded-lg font-medium hover:bg-[#2a0411] transition-colors">Start Shopping</a>
                     </div>
                 @else
-                    <div class="space-y-6">
+                    <div class="grid gap-6 lg:grid-cols-[2fr_1fr]">
                         <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
                             <div class="block sm:hidden">
                                 @foreach($cart->items as $i)
@@ -63,23 +63,23 @@
                                 @endforeach
                             </div>
 
-                            <div class="hidden sm:block overflow-x-auto">
-                                <table class="w-full min-w-[860px]">
+                            <div class="hidden sm:block">
+                                <table class="w-full">
                                     <thead class="bg-[#A38560]">
                                         <tr>
-                                            <th class="p-4 text-left text-[#E0E0E0] text-sm">Product</th>
-                                            <th class="p-4 text-center text-[#E0E0E0] text-sm w-[7.5rem]">Size</th>
-                                            <th class="p-4 text-center text-[#E0E0E0] text-sm">Qty</th>
-                                            <th class="p-4 text-center text-[#E0E0E0] text-sm">Price</th>
-                                            <th class="p-4 text-center text-[#E0E0E0] text-sm">Total</th>
-                                            <th class="p-4 text-center text-[#E0E0E0] text-sm">Action</th>
+                                            <th class="p-4 text-left text-[#E0E0E0] text-sm w-[38%]">Product</th>
+                                            <th class="p-4 text-center text-[#E0E0E0] text-sm w-[8rem]">Size</th>
+                                            <th class="p-4 text-center text-[#E0E0E0] text-sm w-[14%]">Qty</th>
+                                            <th class="p-4 text-center text-[#E0E0E0] text-sm w-[16%]">Price</th>
+                                            <th class="p-4 text-center text-[#E0E0E0] text-sm w-[16%]">Total</th>
+                                            <th class="p-4 text-center text-[#E0E0E0] text-sm w-[10%]">Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @foreach($cart->items as $i)
                                             <tr class="border-t border-[#E0E0E0]">
-                                                <td class="p-4 text-[#03110D] text-sm">{{ $i->product->name }}</td>
-                                                <td class="p-4 text-center text-[#03110D] text-sm font-semibold w-[7.5rem]">
+                                                <td class="p-4 text-[#03110D] text-sm align-top">{{ $i->product->name }}</td>
+                                                <td class="p-4 text-center text-[#03110D] text-sm font-semibold">
                                                     <select id="desktop-size-{{ $i->id }}" data-size-select="{{ $i->id }}" onchange="changeSize({{ $i->id }}, this.value)" class="bg-[#E0E0E0] text-[#03110D] text-sm font-semibold px-3 py-1 rounded focus:outline-none focus:ring-2 focus:ring-[#A38560] w-full min-w-[6.5rem]">
                                                         @foreach($availableSizes as $size)
                                                             <option value="{{ $size }}" @selected($i->size === $size)>{{ $size }}</option>
@@ -95,7 +95,7 @@
                                                 </td>
                                                 <td class="p-4 text-center text-[#03110D] text-sm">Rp {{ number_format($i->product->price, 0, ',', '.') }}</td>
                                                 <td class="p-4 text-center text-[#03110D] text-sm" data-total-{{ $i->id }}>Rp {{ number_format($i->qty * $i->product->price, 0, ',', '.') }}</td>
-                                                <td class="p-4 text-center">
+                                                <td class="p-4 text-center align-top">
                                                     <form method="POST" action="{{ route('cart.remove', $i)}}">
                                                         @method('DELETE') @csrf
                                                         <button class="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600 transition-colors text-xs">Remove</button>
@@ -108,7 +108,7 @@
                             </div>
                         </div>
 
-                        <div class="bg-[#A38560] p-6 rounded-2xl shadow-lg">
+                        <div class="bg-[#A38560] p-6 rounded-2xl shadow-lg h-fit lg:sticky lg:top-24">
                             <h3 class="font-bold text-lg mb-4 text-center text-[#390517]">Order Summary</h3>
                             <div class="space-y-2 mb-4">
                                 <div class="flex justify-between text-[#390517] text-sm">
@@ -122,11 +122,11 @@
                                     <span data-final-total>Rp {{ number_format($cart->total() ?? 0, 0, ',', '.') }}</span>
                                 </div>
                             </div>
-                            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between sm:gap-4 gap-3">
-                                <a href="{{ route('checkout.show') }}" class="w-full sm:w-auto sm:flex-1 bg-[#390517] text-[#E0E0E0] text-center px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity text-sm">
+                            <div class="space-y-3">
+                                <a href="{{ route('checkout.show') }}" class="block w-full bg-[#390517] text-[#E0E0E0] text-center px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity text-sm">
                                     Checkout Now
                                 </a>
-                                <a href="{{ url('/') }}" class="w-full sm:w-auto sm:flex-1 border-2 border-[#390517] text-center px-6 py-3 rounded-lg font-semibold text-[#390517] hover:bg-white transition-colors text-sm">
+                                <a href="{{ url('/') }}" class="block w-full border-2 border-[#390517] text-center px-6 py-3 rounded-lg font-semibold text-[#390517] hover:bg-white transition-colors text-sm">
                                     Continue Shopping
                                 </a>
                             </div>
