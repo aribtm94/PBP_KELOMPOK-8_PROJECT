@@ -58,15 +58,17 @@
         <td>{{ $o->created_at->format('Y-m-d H:i') }}</td>
         <td>Rp {{ number_format($o->total, 0, ',', '.') }}</td>
         <td>
+          @php $isFinal = in_array($o->status, ['batal','selesai']); @endphp
           <form method="POST" action="{{ route('admin.orders.status', $o) }}" class="flex items-center gap-2">
             @csrf @method('PATCH')
             <select name="status" 
+                    {{ $isFinal ? 'disabled' : '' }}
                     class="bg-gray-900 border border-gray-600 text-white rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-gray-400">
               @foreach(['baru','diproses','dikirim','selesai','batal'] as $s)
                 <option value="{{ $s }}" @selected($o->status === $s)>{{ ucfirst($s) }}</option>
               @endforeach
             </select>
-            <button class="bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded text-sm">Ubah</button>
+            <button type="submit" {{ $isFinal ? 'disabled' : '' }} class="bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded text-sm {{ $isFinal ? 'opacity-50 cursor-not-allowed' : '' }}">Ubah</button>
           </form>
         </td>
         <td>

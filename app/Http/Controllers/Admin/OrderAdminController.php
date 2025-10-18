@@ -31,7 +31,12 @@ class OrderAdminController extends Controller
 
     public function updateStatus(Request $request, Order $order)
     {
-        $request->validate(['status' => 'required|string']);
+        // Prevent status changes for finalized orders
+        if (in_array($order->status, ['batal', 'selesai'])) {
+            return redirect()->route('admin.orders.index')->with('error', 'Pesanan yang sudah berstatus batal atau selesai tidak dapat diubah lagi.');
+        }
+
+        $request->validate(['status' => 'required|in:baru,diproses,dikirim,selesai,batal']);
         $order->update(['status' => $request->status]);
 
         return redirect()->route('admin.orders.index')->with('success', 'Status pesanan berhasil diperbarui!');
