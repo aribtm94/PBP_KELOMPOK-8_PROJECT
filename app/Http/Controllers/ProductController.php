@@ -62,14 +62,14 @@ class ProductController extends Controller
 
         if ($r->filled('search')) {
             $term = (string) $r->string('search');
-            $searchResults = $q->where('name', 'like', "%{$term}%")->latest()->paginate(12)->withQueryString();
+            $searchResults = $q->where('name', 'like', "%{$term}%")->latest()->get();
             
             // If search found no results, show popup but display all products
             if ($searchResults->count() === 0) {
                 $showNoProductsPopup = true;
                 // Reset query to show all products
                 $q = Product::query()->with('category')->where('is_active', true);
-                $products = $q->latest()->paginate(12);
+                $products = $q->latest()->get();
             } else {
                 $products = $searchResults;
             }
@@ -78,7 +78,7 @@ class ProductController extends Controller
             if ($r->filled('category')) {
                 $q->where('category_id', (int) $r->integer('category'));
             }
-            $products = $q->latest()->paginate(12)->withQueryString();
+            $products = $q->latest()->get();
         }
 
         $categories = Category::orderBy('name')->get();
