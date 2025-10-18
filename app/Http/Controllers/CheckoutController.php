@@ -44,7 +44,7 @@ class CheckoutController extends Controller
 
             foreach ($cart->items as $i) {
                 if ($i->qty > $i->product->stock) {
-                    throw new \RuntimeException('Stok tidak cukup');
+                    throw new \RuntimeException("Stok produk '{$i->product->name}' tidak cukup. Stok tersedia: {$i->product->stock}, diminta: {$i->qty}");
                 }
 
                 $total += $i->qty * $i->product->price;
@@ -70,7 +70,13 @@ class CheckoutController extends Controller
                     'subtotal'   => $i->qty * $i->product->price,
                 ]);
 
-                $i->product->decrement('stock', $i->qty);
+                // Validasi stock sekali lagi sebelum decrement
+                $product = $i->product->fresh(); // Ambil data terbaru
+                if ($product->stock >= $i->qty) {
+                    $product->decrement('stock', $i->qty);
+                } else {
+                    throw new \RuntimeException("Stok produk '{$product->name}' tidak mencukupi saat checkout");
+                }
             }
 
             $cart->items()->delete();
