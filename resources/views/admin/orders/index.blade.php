@@ -1,48 +1,87 @@
 @extends('layouts.app')
+
 @section('content')
-<h1 class="text-xl font-bold mb-3" style="color: #E0E0E0;">Admin • Pesanan</h1>
-<table class="w-full border rounded overflow-hidden" style="border-color: #E0E0E0;">
-  <tr class="bg-gray-50">
-    <th class="p-2" style="color: #E0E0E0;">No</th>
-    <th style="color: #E0E0E0;">User</th>
-    <th style="color: #E0E0E0;">Items</th>
-    <th style="color: #E0E0E0;">Tanggal</th>
-    <th style="color: #E0E0E0;">Total</th>
-    <th style="color: #E0E0E0;">Status</th>
-    <th></th>
-  </tr>
-  @foreach($orders as $o)
-  <tr class="border-t" style="border-color: #E0E0E0;">
-    <td class="p-2" style="color: #E0E0E0;">#{{ $o->id }}</td>
-    <td style="color: #E0E0E0;">{{ $o->user->name }} ({{ $o->user->email }})</td>
-    <td class="p-2" style="color: #E0E0E0;">
-      <div class="text-sm">{{ $o->items->count() }} item(s)</div>
-      <div class="text-xs opacity-75">
-        @foreach($o->items->take(2) as $item)
-          <span class="inline-block bg-gray-600 text-white px-1 rounded text-xs mr-1">
-            {{ $item->size ?? 'N/A' }}
-          </span>
-        @endforeach
-        @if($o->items->count() > 2)
-          <span class="text-xs">+{{ $o->items->count() - 2 }} more</span>
-        @endif
-      </div>
-    </td>
-    <td style="color: #E0E0E0;">{{ $o->created_at->format('Y-m-d H:i') }}</td>
-    <td style="color: #E0E0E0;">Rp {{ number_format($o->total,0,',','.') }}</td>
-    <td>
-      <form method="POST" action="{{ route('admin.orders.status',$o) }}" class="flex gap-2">@csrf @method('PATCH')
-        <select name="status" class="border p-1 rounded" style="border-color: #E0E0E0; color: #E0E0E0; background-color: transparent;">
-          @foreach(['baru','diproses','dikirim','selesai','batal'] as $s)
-            <option value="{{ $s }}" @selected($o->status===$s)>{{ $s }}</option>
-          @endforeach
-        </select>
-        <button class="border px-2 rounded" style="color: #E0E0E0; border-color: #E0E0E0;">Ubah</button>
-      </form>
-    </td>
-    <td><a class="border px-2 py-1 rounded" style="color: #E0E0E0; border-color: #E0E0E0;" href="{{ route('admin.orders.show',$o) }}">Detail</a></td>
-  </tr>
-  @endforeach
-</table>
-<div class="mt-3" style="color: #E0E0E0;">{{ $orders->links() }}</div>
+<div class="mb-6 flex justify-between items-center">
+  <h1 class="text-2xl font-bold text-white">Kelola Pesanan</h1>
+  <a href="{{ route('admin.dashboard') }}" 
+     class="bg-gray-700 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition">
+    ← Dashboard
+  </a>
+</div>
+
+{{-- Statistik Ringkas --}}
+<div class="grid grid-cols-5 gap-4 mb-6">
+  <div class="bg-gray-800 text-center text-white p-4 rounded-lg shadow-md">
+    <div class="text-3xl font-bold">{{ $stats['new'] ?? 0 }}</div>
+    <div class="text-sm opacity-80">New Orders</div>
+  </div>
+  <div class="bg-gray-800 text-center text-white p-4 rounded-lg shadow-md">
+    <div class="text-3xl font-bold">{{ $stats['processed'] ?? 0 }}</div>
+    <div class="text-sm opacity-80">Processed</div>
+  </div>
+  <div class="bg-gray-800 text-center text-white p-4 rounded-lg shadow-md">
+    <div class="text-3xl font-bold">{{ $stats['sent'] ?? 0 }}</div>
+    <div class="text-sm opacity-80">Sent</div>
+  </div>
+  <div class="bg-gray-800 text-center text-white p-4 rounded-lg shadow-md">
+    <div class="text-3xl font-bold">{{ $stats['finished'] ?? 0 }}</div>
+    <div class="text-sm opacity-80">Finished</div>
+  </div>
+  <div class="bg-gray-800 text-center text-white p-4 rounded-lg shadow-md">
+    <div class="text-3xl font-bold">{{ $stats['cancelled'] ?? 0 }}</div>
+    <div class="text-sm opacity-80">Cancelled</div>
+  </div>
+</div>
+
+{{-- Tabel Pesanan --}}
+<h2 class="text-xl font-semibold mb-3 text-white">Daftar Pesanan</h2>
+
+<div class="overflow-x-auto">
+  <table class="w-full border border-gray-600 text-white rounded-lg overflow-hidden">
+    <thead class="bg-gray-700">
+      <tr>
+        <th class="p-3 text-left">No</th>
+        <th class="text-left">User</th>
+        <th class="text-left">Items</th>
+        <th class="text-left">Tanggal</th>
+        <th class="text-left">Total</th>
+        <th class="text-left">Status</th>
+        <th class="text-left">Aksi</th>
+      </tr>
+    </thead>
+    <tbody>
+      @forelse($orders as $o)
+      <tr class="border-t border-gray-700 hover:bg-gray-800 transition">
+        <td class="p-3">#{{ $o->id }}</td>
+        <td>{{ $o->user->name ?? 'N/A' }} ({{ $o->user->email ?? '-' }})</td>
+        <td>{{ $o->items->count() }} item(s)</td>
+        <td>{{ $o->created_at->format('Y-m-d H:i') }}</td>
+        <td>Rp {{ number_format($o->total, 0, ',', '.') }}</td>
+        <td>
+          <form method="POST" action="{{ route('admin.orders.status', $o) }}" class="flex items-center gap-2">
+            @csrf @method('PATCH')
+            <select name="status" 
+                    class="bg-gray-900 border border-gray-600 text-white rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-gray-400">
+              @foreach(['baru','diproses','dikirim','selesai','batal'] as $s)
+                <option value="{{ $s }}" @selected($o->status === $s)>{{ ucfirst($s) }}</option>
+              @endforeach
+            </select>
+            <button class="bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded text-sm">Ubah</button>
+          </form>
+        </td>
+        <td>
+          <a href="{{ route('admin.orders.show', $o) }}" 
+             class="bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded text-sm inline-block">
+            Detail
+          </a>
+        </td>
+      </tr>
+      @empty
+      <tr>
+        <td colspan="7" class="text-center py-4 text-gray-400">Tidak ada pesanan ditemukan.</td>
+      </tr>
+      @endforelse
+    </tbody>
+  </table>
+</div>
 @endsection
