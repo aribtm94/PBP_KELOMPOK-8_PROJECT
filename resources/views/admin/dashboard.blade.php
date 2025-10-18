@@ -1,42 +1,47 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="space-y-6">
+<div class="mt-8">
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div class="bg-[#390517] justify-between items-center p-6 mt-8 rounded-2xl shadow-md">
+      <h1 class="text-3xl font-bold text-white">Hello, Admin 👋</h1>
+      <h2 class="text-gray-300 font-semibold">Welcome back to the Gayaku.id Dashboard</h2>
+      <p class="text-gray-300">Here you can manage your orders and view the latest statistics.</p>
+    </div>
 
-  <div class="flex justify-between items-center mb-6">
-    <h1 class="text-3xl font-bold text-white">Hello, Admin 👋</h1>
-    <p class="text-gray-300">Selamat datang kembali di Dashboard Gayaku.id</p>
+    {{-- Kalender --}}
+    <div class="bg-[#390517] rounded-2xl p-6 shadow-md mt-8 text-white">
+      <h2 class="text-xl font-semibold mb-3">📅 Kalender</h2>
+      <div id="calendar" class="text-center"></div>
+    </div>
+
+    {{-- Statistik Pesanan --}}
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div class="bg-[#390517] text-center text-white p-4 rounded-lg shadow-md">
+        <div class="text-3xl font-bold">{{ $stats['new'] ?? 0 }}</div>
+        <div class="opacity-70 text-sm mt-1">New Orders</div>
+      </div>
+      <div class="bg-[#390517] text-center text-white p-4 rounded-lg shadow-md">
+        <div class="text-3xl font-bold">{{ $stats['processed'] ?? 0 }}</div>
+        <div class="opacity-70 text-sm mt-1">Processed</div>
+      </div>
+      <div class="bg-[#390517] text-center text-white p-4 rounded-lg shadow-md">
+        <div class="text-3xl font-bold">{{ $stats['sent'] ?? 0 }}</div>
+        <div class="opacity-70 text-sm mt-1">Sent</div>
+      </div>
+      <div class="bg-[#390517] text-center text-white p-4 rounded-lg shadow-md">
+        <div class="text-3xl font-bold">{{ $stats['finished'] ?? 0 }}</div>
+        <div class="opacity-70 text-sm mt-1">Finished</div>
+      </div>
+      <div class="bg-[#390517] text-center text-white p-4 rounded-lg shadow-md">
+        <div class="text-3xl font-bold">{{ $stats['cancelled'] ?? 0 }}</div>
+        <div class="opacity-70 text-sm mt-1">Cancelled</div>
+      </div>
+    </div>
+      <div class="bg-[#390517] p-6 rounded-2xl shadow-md">
+      <h1 class="text-2xl font-bold text-white">New Orders</h1>
+    </div>
   </div>
-
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-    <div class="bg-gray-700 text-center text-white p-4 rounded-lg shadow-md">
-      <div class="text-3xl font-bold">{{ $stats['new'] ?? 0 }}</div>
-      <div class="opacity-70 text-sm mt-1">New Orders</div>
-    </div>
-    <div class="bg-gray-700 text-center text-white p-4 rounded-lg shadow-md">
-      <div class="text-3xl font-bold">{{ $stats['processed'] ?? 0 }}</div>
-      <div class="opacity-70 text-sm mt-1">Processed</div>
-    </div>
-    <div class="bg-gray-700 text-center text-white p-4 rounded-lg shadow-md">
-      <div class="text-3xl font-bold">{{ $stats['sent'] ?? 0 }}</div>
-      <div class="opacity-70 text-sm mt-1">Sent</div>
-    </div>
-    <div class="bg-gray-700 text-center text-white p-4 rounded-lg shadow-md">
-      <div class="text-3xl font-bold">{{ $stats['finished'] ?? 0 }}</div>
-      <div class="opacity-70 text-sm mt-1">Finished</div>
-    </div>
-    <div class="bg-gray-700 text-center text-white p-4 rounded-lg shadow-md">
-      <div class="text-3xl font-bold">{{ $stats['cancelled'] ?? 0 }}</div>
-      <div class="opacity-70 text-sm mt-1">Cancelled</div>
-    </div>
-  </div>
-
-  {{-- Kalender --}}
-  <div class="bg-gray-800 rounded-lg p-6 shadow-md mt-8 text-white">
-    <h2 class="text-xl font-semibold mb-3">📅 Kalender</h2>
-    <div id="calendar" class="text-center"></div>
-  </div>
-
 </div>
 
 {{-- Kalender Script --}}
