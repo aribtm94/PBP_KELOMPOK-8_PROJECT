@@ -3,7 +3,7 @@
 @section('content')
 @php $availableSizes = ['S','M','L','XL','XXL']; @endphp
 
-<div class="min-h-screen bg-[#FBF2E3] py-8">
+<div class="min-h-screen bg-[#FBF2E3] py-4 rounded-3xl">
     <div class="max-w-6xl xl:max-w-7xl mx-auto px-2 sm:px-4">
         <div class="bg-transparent rounded-2xl overflow-hidden">
             <div class="bg-transparent px-8 py-6">
@@ -25,7 +25,7 @@
                         <a href="{{ url('/') }}" class="bg-[#390517] text-white px-8 py-3 rounded-lg font-medium hover:bg-[#2a0411] transition-colors">Start Shopping</a>
                     </div>
                 @else
-                    <div class="grid gap-6 lg:grid-cols-[2fr_1fr]">
+                    <div class="grid gap-6 lg:grid-cols-[3fr_1fr]">
                         <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
                             <div class="block sm:hidden">
                                 @foreach($cart->items as $i)
@@ -67,11 +67,11 @@
                                 <table class="w-full table-fixed">
                                     <colgroup>
                                         <col />
-                                        <col class="w-[90px]" />
-                                        <col class="w-[120px]" />
-                                        <col class="w-[160px] md:w-[180px]" />
-                                        <col class="w-[180px] md:w-[200px]" />
-                                        <col class="w-[110px]" />
+                                        <col class="w-[125px]" />
+                                        <col class="w-[125px]" />
+                                        <col class="w-[125px]" />
+                                        <col class="w-[125px]" />
+                                        <col class="w-[125px]" />
                                     </colgroup>
                                     <thead class="bg-[#A38560]">
                                         <tr>
@@ -103,7 +103,7 @@
                                                 </td>
                                                 <td class="px-4 py-4 text-center text-[#03110D] text-sm whitespace-nowrap tabular-nums">Rp&nbsp;{{ number_format($i->product->price, 0, ',', '.') }}</td>
                                                 <td class="px-4 py-4 text-center text-[#03110D] text-sm whitespace-nowrap tabular-nums" data-total-{{ $i->id }}>Rp&nbsp;{{ number_format($i->qty * $i->product->price, 0, ',', '.') }}</td>
-                                                <td class="px-4 py-4 text-center align-top">
+                                                <td class="px-4 py-4 text-center align-middle">
                                                     <form method="POST" action="{{ route('cart.remove', $i)}}">
                                                         @method('DELETE') @csrf
                                                         <button class="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600 transition-colors text-xs">Remove</button>

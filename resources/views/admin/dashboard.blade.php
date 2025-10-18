@@ -8,7 +8,7 @@
     <p class="text-gray-300">Selamat datang kembali di Dashboard Gayaku.id</p>
   </div>
 
-  <div class="grid grid-cols-5 gap-4">
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
     <div class="bg-gray-700 text-center text-white p-4 rounded-lg shadow-md">
       <div class="text-3xl font-bold">{{ $stats['new'] ?? 0 }}</div>
       <div class="opacity-70 text-sm mt-1">New Orders</div>

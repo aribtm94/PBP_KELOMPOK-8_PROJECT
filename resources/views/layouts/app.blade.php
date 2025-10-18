@@ -113,10 +113,24 @@
             <!-- Garis Vertikal -->
             <div class="xl:hidden h-8 w-px bg-[#390517]/30 mx-4"></div>
             
-            <a href="{{ route('home') }}" class="flex flex-col hover:opacity-80 transition-opacity">
-                <span class="text-[#390517] text-xl font-bold">{{ config('app.name') }}</span>
-                <span class="hidden sm:block text-[#390517] text-sm font-bold italic">Temukan Sesuai Gayamu!</span>
-            </a>
+            @auth
+                @if(auth()->user()->role === 'admin')
+                    <a href="{{ route('admin.dashboard') }}" class="flex flex-col hover:opacity-80 transition-opacity">
+                        <span class="text-[#390517] text-xl font-bold">{{ config('app.name') }}</span>
+                        <span class="hidden sm:block text-[#390517] text-sm font-bold italic">Temukan Sesuai Gayamu!</span>
+                    </a>
+                @else
+                    <a href="{{ route('home') }}" class="flex flex-col hover:opacity-80 transition-opacity">
+                        <span class="text-[#390517] text-xl font-bold">{{ config('app.name') }}</span>
+                        <span class="hidden sm:block text-[#390517] text-sm font-bold italic">Temukan Sesuai Gayamu!</span>
+                    </a>
+                @endif
+            @else
+                <a href="{{ route('home') }}" class="flex flex-col hover:opacity-80 transition-opacity">
+                    <span class="text-[#390517] text-xl font-bold">{{ config('app.name') }}</span>
+                    <span class="hidden sm:block text-[#390517] text-sm font-bold italic">Temukan Sesuai Gayamu!</span>
+                </a>
+            @endauth
         </div>
 
         <!-- Search Bar - Only for Users and Guests -->
