@@ -72,7 +72,7 @@
                                         </div>
                                         <div>
                                             <div class="text-sm text-[#390517] opacity-70 mb-1">Ship To :</div>
-                                            <div class="font-medium text-[#390517]">{{ $o->address_text ?? 'Address not specified' }}</div>
+                                            <div class="font-medium text-[#390517]">{{ $o->receiver_address ?? 'Address not specified' }}</div>
                                         </div>
                                     </div>
                                     

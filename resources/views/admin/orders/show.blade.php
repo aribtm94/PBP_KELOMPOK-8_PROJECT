@@ -12,9 +12,9 @@
     <div style="color: #E0E0E0;"><b>Tanggal:</b> {{ $order->created_at->format('Y-m-d H:i') }}</div>
     <div style="color: #E0E0E0;"><b>User:</b> {{ $order->user->name }} ({{ $order->user->email }})</div>
     <div style="color: #E0E0E0;"><b>Status:</b> <span class="px-2 py-1 rounded bg-[#A38560]/20 border border-[#A38560]/30" style="color: #E0E0E0;">{{ $order->status }}</span></div>
-    <div class="mt-2" style="color: #E0E0E0;"><b>Penerima:</b> {{ $order->receiver_name }}</div>
-    <div style="color: #E0E0E0;"><b>Alamat:</b> {{ $order->address_text }}</div>
-    <div style="color: #E0E0E0;"><b>Telp:</b> {{ $order->phone ?? '-' }}</div>
+  <div class="mt-2" style="color: #E0E0E0;"><b>Penerima:</b> <span class="font-semibold">{{ $order->receiver_name }}</span></div>
+  <div style="color: #E0E0E0;"><b>Alamat:</b> <span class="font-semibold">{{ $order->receiver_address }}</span></div>
+  <div style="color: #E0E0E0;"><b>Telp:</b> <span class="font-semibold">{{ $order->receiver_phone ?? '-' }}</span></div>
   </div>
 
   <div class="border rounded p-3" style="border-color: #E0E0E0;">

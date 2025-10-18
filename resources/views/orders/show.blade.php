@@ -46,9 +46,9 @@
         <div class="bg-[#390517] p-4 mb-6 rounded-lg">
             <div class="font-semibold text-[#FBF2E3]">Shipping Information</div>
             <div class="text-sm text-[#FBF2E3] mt-2">
-                <p>Penerima: <span class="font-semibold text-[#A38560]">{{ $order->receiver_name }}</span></p>
-                <p>Alamat: <span class="font-semibold text-[#A38560]">{{ $order->address_text }}</span></p>
-                <p>Telepon: <span class="font-semibold text-[#A38560]">{{ $order->phone }}</span></p>
+                <p>Penerima: <span class="block text-2xl sm:text-3xl font-extrabold text-[#A38560] tracking-tight">{{ $order->receiver_name }}</span></p>
+                <p class="mt-2">Alamat: <span class="font-semibold text-[#A38560]">{{ $order->receiver_address }}</span></p>
+                <p class="mt-1">Telepon: <span class="font-semibold text-[#A38560]">{{ $order->receiver_phone }}</span></p>
             </div>
         </div>
 
