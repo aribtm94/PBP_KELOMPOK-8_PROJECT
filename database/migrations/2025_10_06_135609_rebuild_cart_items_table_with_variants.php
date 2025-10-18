@@ -33,32 +33,48 @@ return new class extends Migration
         });
         
         // Restore the data but avoid inserting duplicates which would violate unique constraints.
-        $seen = [];
+        // Aggregate existing items by cart_id,product_id,color,size and sum their quantities.
+        $aggregate = [];
         foreach ($existingItems as $item) {
-            // Normalize nulls to empty string to build a stable key
             $color = $item->color ?? '';
             $size = $item->size ?? '';
             $key = implode('-', [$item->cart_id, $item->product_id, $color, $size]);
-            if (isset($seen[$key])) {
-                // skip duplicates
-                continue;
-            }
-            $seen[$key] = true;
-
-            try {
-                DB::table('cart_items')->insert([
-                    'id' => $item->id,
+            if (!isset($aggregate[$key])) {
+                $aggregate[$key] = [
                     'cart_id' => $item->cart_id,
                     'product_id' => $item->product_id,
                     'color' => $item->color,
                     'size' => $item->size,
-                    'qty' => $item->qty,
+                    'qty' => (int) $item->qty,
                     'created_at' => $item->created_at,
                     'updated_at' => $item->updated_at,
+                ];
+            } else {
+                $aggregate[$key]['qty'] += (int) $item->qty;
+                // Keep the earliest created_at, latest updated_at
+                if ($item->created_at < $aggregate[$key]['created_at']) {
+                    $aggregate[$key]['created_at'] = $item->created_at;
+                }
+                if ($item->updated_at > $aggregate[$key]['updated_at']) {
+                    $aggregate[$key]['updated_at'] = $item->updated_at;
+                }
+            }
+        }
+
+        // Insert aggregated rows using insertOrIgnore to silently skip duplicates
+        foreach ($aggregate as $row) {
+            try {
+                DB::table('cart_items')->insertOrIgnore([
+                    'cart_id' => $row['cart_id'],
+                    'product_id' => $row['product_id'],
+                    'color' => $row['color'],
+                    'size' => $row['size'],
+                    'qty' => $row['qty'],
+                    'created_at' => $row['created_at'],
+                    'updated_at' => $row['updated_at'],
                 ]);
             } catch (\Exception $e) {
-                // If an insert fails due to a constraint, skip and continue restoring remaining items
-                // Useful for messy legacy data during migration.
+                // ignore and continue
                 continue;
             }
         }

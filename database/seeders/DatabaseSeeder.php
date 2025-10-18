@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\Cart;
+use Illuminate\Support\Facades\Schema;
 
 class DatabaseSeeder extends Seeder
 {
@@ -36,27 +37,6 @@ class DatabaseSeeder extends Seeder
         }
 
         $products = [
-            [
-                'category_id' => 1,
-                'name' => 'Kaos Polos Hitam',
-                'description' => 'Kaos polos bahan katun combed 30s warna hitam ukuran L',
-                'price' => 120000,
-                'stock' => 20,
-            ],
-            [
-                'category_id' => 2,
-                'name' => 'Kemeja Putih Slim Fit',
-                'description' => 'Kemeja putih bahan lembut model slim fit',
-                'price' => 185000,
-                'stock' => 15,
-            ],
-            [
-                'category_id' => 3,
-                'name' => 'Celana Chino Coklat',
-                'description' => 'Celana chino bahan halus warna coklat muda',
-                'price' => 220000,
-                'stock' => 12,
-            ],
         ];
 
         foreach ($products as $p) {
@@ -66,10 +46,26 @@ class DatabaseSeeder extends Seeder
             );
         }
 
+        // First run DemoSeeder to ensure demo products exist (DemoSeeder is idempotent)
+        $this->call(DemoSeeder::class);
+
         $cart = Cart::firstOrCreate(['user_id' => $user->id]);
-        $cart->items()->create([
-            'product_id' => 1, 
-            'qty' => 1,
-        ]);
+        // Find an existing product to add to the cart (avoid hard-coded id)
+        $firstProduct = Product::first();
+        if ($firstProduct) {
+            // seed cart item idempotently (no duplicate product rows)
+            // If cart_items table supports color/size columns, include them in the constraint.
+            if (Schema::hasTable('cart_items') && Schema::hasColumn('cart_items', 'color') && Schema::hasColumn('cart_items', 'size')) {
+                $cart->items()->updateOrCreate(
+                    ['product_id' => $firstProduct->id, 'color' => null, 'size' => null],
+                    ['qty' => 1]
+                );
+            } else {
+                $cart->items()->updateOrCreate(
+                    ['product_id' => $firstProduct->id],
+                    ['qty' => 1]
+                );
+            }
+        }
     }
 }
