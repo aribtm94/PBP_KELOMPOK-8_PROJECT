@@ -67,7 +67,7 @@ php artisan key:generate
 6) Jalankan migrasi dan seeder
 ```bash
 php artisan migrate --seed
-
+```
 
 7) Install dependency frontend dan build frontend
 ```bash
