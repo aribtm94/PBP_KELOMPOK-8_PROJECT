@@ -10,10 +10,8 @@ class OrderAdminController extends Controller
 {
     public function index()
     {
-        // Ambil semua pesanan dengan relasi user dan item
         $orders = Order::with(['user', 'items'])->latest()->get();
 
-        // Statistik ringkas untuk dashboard admin
         $stats = [
             'new' => Order::where('status', 'baru')->count(),
             'processed' => Order::where('status', 'diproses')->count(),
