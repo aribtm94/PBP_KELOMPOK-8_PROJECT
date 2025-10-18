@@ -673,6 +673,29 @@ function closeCartToast() {
   </div>
   @endif
 
+  <!-- Generic Toast (used for actions like password reset) -->
+  @if(session('toast'))
+  @php $t = session('toast'); @endphp
+  <div id="cartSuccessToast" class="fixed top-4 right-4 @if(isset($t['variant']) && $t['variant']==='blue') bg-gradient-to-r from-blue-500 to-blue-600 @else bg-gradient-to-r from-blue-500 to-blue-600 @endif text-white px-6 py-4 rounded-lg shadow-xl transform translate-x-full transition-transform duration-500 z-50 max-w-sm">
+      <div class="flex items-center gap-3">
+          <div class="flex-shrink-0">
+              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+              </svg>
+          </div>
+          <div>
+              <div class="font-bold text-sm">{{ $t['title'] ?? 'Info' }}</div>
+              <div class="text-xs opacity-90">{{ $t['message'] ?? '' }}</div>
+          </div>
+          <button onclick="closeCartToast()" class="ml-auto flex-shrink-0 text-white hover:text-gray-200">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+          </button>
+      </div>
+  </div>
+  @endif
+
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8 w-full flex-1">
     @if(session('error'))   <div class="mb-3 p-3 bg-red-500/20 rounded border border-red-500/30 text-sm sm:text-base" style="color: #E0E0E0;">{{ session('error') }}</div>   @endif
     

@@ -52,6 +52,10 @@
                         <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" name="remember">
                         <span class="ml-2 text-sm text-white">{{ __('Remember me') }}</span>
                     </label>
+
+                    @if (Route::has('password.request'))
+                        <a href="{{ route('password.request') }}" class="text-sm text-white underline hover:opacity-80">{{ __('Forgot your password?') }}</a>
+                    @endif
                 </div>
 
                 <!-- Login & Sign Up Buttons -->
