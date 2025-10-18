@@ -64,38 +64,46 @@
                             </div>
 
                             <div class="hidden sm:block">
-                                <table class="w-full">
+                                <table class="w-full table-fixed">
+                                    <colgroup>
+                                        <col />
+                                        <col class="w-[90px]" />
+                                        <col class="w-[120px]" />
+                                        <col class="w-[160px] md:w-[180px]" />
+                                        <col class="w-[180px] md:w-[200px]" />
+                                        <col class="w-[110px]" />
+                                    </colgroup>
                                     <thead class="bg-[#A38560]">
                                         <tr>
-                                            <th class="p-4 text-left text-[#E0E0E0] text-sm w-[38%]">Product</th>
-                                            <th class="p-4 text-center text-[#E0E0E0] text-sm w-[7rem]">Size</th>
-                                            <th class="p-4 text-center text-[#E0E0E0] text-sm w-[12%]">Qty</th>
-                                            <th class="p-4 text-center text-[#E0E0E0] text-sm w-[17%]">Price</th>
-                                            <th class="p-4 text-center text-[#E0E0E0] text-sm w-[17%]">Total</th>
-                                            <th class="p-4 text-center text-[#E0E0E0] text-sm w-[10%]">Action</th>
+                                            <th class="px-4 py-4 text-left text-[#E0E0E0] text-sm">Product</th>
+                                            <th class="px-4 py-4 text-center text-[#E0E0E0] text-sm">Size</th>
+                                            <th class="px-4 py-4 text-center text-[#E0E0E0] text-sm">Qty</th>
+                                            <th class="px-4 py-4 text-[#E0E0E0] text-sm text-center whitespace-nowrap tabular-nums">Price</th>
+                                            <th class="px-4 py-4 text-[#E0E0E0] text-sm text-center whitespace-nowrap tabular-nums">Total</th>
+                                            <th class="px-4 py-4 text-center text-[#E0E0E0] text-sm">Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @foreach($cart->items as $i)
                                             <tr class="border-t border-[#E0E0E0]">
                                                 <td class="p-4 text-[#03110D] text-sm align-top">{{ $i->product->name }}</td>
-                                                <td class="p-4 text-center text-[#03110D] text-sm font-semibold">
-                                                    <select id="desktop-size-{{ $i->id }}" data-size-select="{{ $i->id }}" onchange="changeSize({{ $i->id }}, this.value)" class="bg-[#E0E0E0] text-[#03110D] text-sm font-semibold px-3 py-1 rounded focus:outline-none focus:ring-2 focus:ring-[#A38560] w-full min-w-[6.5rem]">
+                                                <td class="px-4 py-4 text-center text-[#03110D] text-sm font-semibold">
+                                                    <select id="desktop-size-{{ $i->id }}" data-size-select="{{ $i->id }}" onchange="changeSize({{ $i->id }}, this.value)" class="bg-[#E0E0E0] text-[#03110D] text-sm font-semibold px-2 py-1 rounded focus:outline-none focus:ring-2 focus:ring-[#A38560] w-full min-w-[4.5rem]">
                                                         @foreach($availableSizes as $size)
                                                             <option value="{{ $size }}" @selected($i->size === $size)>{{ $size }}</option>
                                                         @endforeach
                                                     </select>
                                                 </td>
-                                                <td class="p-4 text-center text-[#03110D] text-sm">
-                                                    <div class="flex items-center justify-center gap-2">
-                                                        <button onclick="decreaseQty({{ $i->id }})" class="bg-[#E0E0E0] text-[#390517] px-3 py-1 rounded hover:bg-gray-300 font-bold">-</button>
-                                                        <input type="number" id="qty-{{ $i->id }}" value="{{ $i->qty }}" min="1" class="qty-input border border-[#390517] rounded-lg w-16 h-10 text-center text-[#03110D] focus:outline-none focus:ring-2 focus:ring-[#A38560] font-semibold">
-                                                        <button onclick="increaseQty({{ $i->id }})" class="bg-[#E0E0E0] text-[#390517] px-3 py-1 rounded hover:bg-gray-300 font-bold">+</button>
+                                                <td class="px-4 py-4 text-center text-[#03110D] text-sm">
+                                                    <div class="flex items-center justify-center gap-1.5">
+                                                        <button onclick="decreaseQty({{ $i->id }})" class="bg-[#E0E0E0] text-[#390517] px-2.5 py-1 rounded hover:bg-gray-300 font-bold">-</button>
+                                                        <input type="number" id="qty-{{ $i->id }}" value="{{ $i->qty }}" min="1" class="qty-input border border-[#390517] rounded-lg w-14 h-10 text-center text-[#03110D] focus:outline-none focus:ring-2 focus:ring-[#A38560] font-semibold">
+                                                        <button onclick="increaseQty({{ $i->id }})" class="bg-[#E0E0E0] text-[#390517] px-2.5 py-1 rounded hover:bg-gray-300 font-bold">+</button>
                                                     </div>
                                                 </td>
-                                                <td class="p-4 text-center text-[#03110D] text-sm">Rp {{ number_format($i->product->price, 0, ',', '.') }}</td>
-                                                <td class="p-4 text-center text-[#03110D] text-sm" data-total-{{ $i->id }}>Rp {{ number_format($i->qty * $i->product->price, 0, ',', '.') }}</td>
-                                                <td class="p-4 text-center align-top">
+                                                <td class="px-4 py-4 text-center text-[#03110D] text-sm whitespace-nowrap tabular-nums">Rp&nbsp;{{ number_format($i->product->price, 0, ',', '.') }}</td>
+                                                <td class="px-4 py-4 text-center text-[#03110D] text-sm whitespace-nowrap tabular-nums" data-total-{{ $i->id }}>Rp&nbsp;{{ number_format($i->qty * $i->product->price, 0, ',', '.') }}</td>
+                                                <td class="px-4 py-4 text-center align-top">
                                                     <form method="POST" action="{{ route('cart.remove', $i)}}">
                                                         @method('DELETE') @csrf
                                                         <button class="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600 transition-colors text-xs">Remove</button>
@@ -248,18 +256,18 @@
 
             const totalElements{{ $i->id }} = document.querySelectorAll('[data-total-{{ $i->id }}]');
             totalElements{{ $i->id }}.forEach(el => {
-                el.textContent = 'Rp ' + total{{ $i->id }}.toLocaleString('id-ID');
+                el.textContent = 'Rp\u00A0' + total{{ $i->id }}.toLocaleString('id-ID');
             });
         @endforeach
 
         const subtotalElements = document.querySelectorAll('[data-subtotal]');
         subtotalElements.forEach(el => {
-            el.textContent = 'Rp ' + newSubtotal.toLocaleString('id-ID');
+            el.textContent = 'Rp\u00A0' + newSubtotal.toLocaleString('id-ID');
         });
 
         const finalTotalElements = document.querySelectorAll('[data-final-total]');
         finalTotalElements.forEach(el => {
-            el.textContent = 'Rp ' + newSubtotal.toLocaleString('id-ID');
+            el.textContent = 'Rp\u00A0' + newSubtotal.toLocaleString('id-ID');
         });
     }
 
