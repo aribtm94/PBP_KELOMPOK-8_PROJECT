@@ -67,9 +67,6 @@
             @endforeach
         </div>
         
-        <div class="mt-8">
-            {{ $products->links() }}
-        </div>
     @else
         <div class="text-center py-12">
             <p class="text-gray-500 text-xl">No products found in this category.</p>
@@ -360,11 +357,6 @@ $productCount = $displayProducts->count();
     </div>
 </section>
 @endif
-
-<div class="mt-0">{{ $products->links() }}</div>
-
-
-
 
 <script>
 let currentIndex = 0;
