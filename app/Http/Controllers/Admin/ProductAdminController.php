@@ -13,9 +13,29 @@ class ProductAdminController extends Controller
 
     public function index()
     {
-        $products   = Product::with('category')->latest()->paginate(20);
+        $sort = request('sort', 'latest');
+
+        $q = Product::with('category');
+        switch ($sort) {
+            case 'price_asc':
+                $q->orderBy('price');
+                break;
+            case 'price_desc':
+                $q->orderByDesc('price');
+                break;
+            case 'name_asc':
+                $q->orderBy('name');
+                break;
+            case 'name_desc':
+                $q->orderByDesc('name');
+                break;
+            default:
+                $q->latest();
+        }
+
+        $products = $q->paginate(20)->withQueryString();
         $categories = Category::orderBy('name')->get();
-        return view('admin.products.index', compact('products','categories'));
+        return view('admin.products.index', compact('products','categories','sort'));
     }
 
     public function store(Request $r)
@@ -34,7 +54,8 @@ class ProductAdminController extends Controller
             $data['image_path'] = $r->file('image')->store('products','public');
         }
 
-        $data['is_active'] = $r->boolean('is_active'); // true/false
+    // Default new products created via admin to active unless the checkbox is explicitly present and unchecked
+    $data['is_active'] = $r->has('is_active') ? $r->boolean('is_active') : true; // true/false
         unset($data['image']); // jangan ikut mass-assign
 
         // Debug log
@@ -62,7 +83,8 @@ class ProductAdminController extends Controller
         if ($r->hasFile('image')) {
             $data['image_path'] = $r->file('image')->store('products','public');
         }
-        $data['is_active'] = $r->boolean('is_active');
+    // When updating, preserve existing value if the checkbox isn't present in the request
+    $data['is_active'] = $r->has('is_active') ? $r->boolean('is_active') : $product->is_active;
         unset($data['image']);
 
         $product->update($data);

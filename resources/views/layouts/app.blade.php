@@ -723,4 +723,5 @@ function closeCartToast() {
   </footer>
 
 </body>
+@stack('scripts')
 </html>
