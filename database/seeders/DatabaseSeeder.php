@@ -49,23 +49,7 @@ class DatabaseSeeder extends Seeder
         // First run DemoSeeder to ensure demo products exist (DemoSeeder is idempotent)
         $this->call(DemoSeeder::class);
 
-        $cart = Cart::firstOrCreate(['user_id' => $user->id]);
-        // Find an existing product to add to the cart (avoid hard-coded id)
-        $firstProduct = Product::first();
-        if ($firstProduct) {
-            // seed cart item idempotently (no duplicate product rows)
-            // If cart_items table supports color/size columns, include them in the constraint.
-            if (Schema::hasTable('cart_items') && Schema::hasColumn('cart_items', 'color') && Schema::hasColumn('cart_items', 'size')) {
-                $cart->items()->updateOrCreate(
-                    ['product_id' => $firstProduct->id, 'color' => null, 'size' => null],
-                    ['qty' => 1]
-                );
-            } else {
-                $cart->items()->updateOrCreate(
-                    ['product_id' => $firstProduct->id],
-                    ['qty' => 1]
-                );
-            }
-        }
+        // NOTE: Removed automatic cart seeding to avoid pre-populating carts during development.
+        // If you need to seed carts for testing, add an explicit CartSeeder or enable via an env flag.
     }
 }

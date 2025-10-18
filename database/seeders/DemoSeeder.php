@@ -21,22 +21,13 @@ class DemoSeeder extends Seeder {
             ['email'=>'user@butik.local'],
             ['name'=>'Pembeli','password'=>Hash::make('password'),'role'=>'user']
         );
-        Cart::firstOrCreate(['user_id'=>$user->id]);
+        // Do not auto-create Cart for demo user to avoid pre-populating shopping carts.
 
         // Membuat kategori fashion sesuai dengan navbar
         $tshirts = Category::firstOrCreate(['name'=>'T-Shirts']);
         $shirts  = Category::firstOrCreate(['name'=>'Shirts']);
         $pants   = Category::firstOrCreate(['name'=>'Pants']);
         $outerwear = Category::firstOrCreate(['name'=>'Outerwear']);
-
-
-        // ==============================================================
-        // Upload gambar produk seperti halaman admin
-        // - Sumber file: public/images/Product/<FolderKategori>/*
-        // - Disalin ke: storage/app/public/products/<FolderKategori>/<file>
-        // - Disimpan ke DB: image_path = "products/<FolderKategori>/<file>"
-        //   (persis seperti $request->file('image')->store('products','public'))
-        // ==============================================================
 
         $folderMap = [
             'T-Shirt'   => 'T-Shirts',
