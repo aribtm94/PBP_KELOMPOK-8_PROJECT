@@ -2,43 +2,13 @@
 
 @section('content')
 
+@php
+  $isSearching = request()->filled('search');
+@endphp
+
 @if(isset($debugMessage))
 <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
     <strong>Debug Info:</strong> {{ $debugMessage }}
-</div>
-@endif
-
-<!-- Popup untuk produk tidak tersedia -->
-@if(isset($showNoProductsPopup) && $showNoProductsPopup)
-<div id="noProductsModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 transition-opacity duration-300">
-    <div class="bg-white rounded-lg p-8 max-w-md mx-4 shadow-2xl transform transition-all duration-300">
-        <div class="text-center">
-            <!-- Icon -->
-            <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
-                <svg class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
-                </svg>
-            </div>
-            
-            <!-- Title -->
-            <h3 class="text-lg font-medium text-gray-900 mb-2">
-                Produk Tidak Tersedia
-            </h3>
-            
-            <!-- Message -->
-            <p class="text-sm text-gray-500 mb-6">
-                Maaf, produk yang Anda cari <strong>"{{ request('search') }}"</strong> tidak tersedia saat ini. 
-                Silakan coba kata kunci lain atau jelajahi kategori produk kami.
-            </p>
-            
-            <!-- Buttons -->
-            <div class="flex flex-col sm:flex-row gap-3 justify-center">
-                <button onclick="closeModal()" class="bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200">
-                    Tutup
-                </button>
-            </div>
-        </div>
-    </div>
 </div>
 @endif
 
@@ -47,25 +17,22 @@
     <h2 class="text-3xl font-bold mb-6" style="color: #E0E0E0;">{{ $selectedCategory->name }} Products</h2>
     
     @if($products->count() > 0)
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            @foreach($products as $product)
-                <div class="rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300" style="background-color: #E0E0E0;">
-                    <a href="{{ route('products.show', $product) }}" class="block">
-                        @if($product->image_path)
-                            <img src="{{ asset('storage/'.$product->image_path) }}" alt="{{ $product->name }}" class="w-full h-64 object-cover">
-                        @else
-                            <div class="w-full h-64 bg-gray-200 flex items-center justify-center">
-                                <span class="text-gray-500">No Image</span>
-                            </div>
-                        @endif
-                        <div class="p-4">
-                            <h3 class="font-semibold text-lg" style="color: #03110D;">{{ $product->name }}</h3>
-                            <p style="color: #03110D;">Rp {{ number_format($product->price, 0, ',', '.') }}</p>
-                        </div>
-                    </a>
-                </div>
-            @endforeach
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+      @foreach($products as $product)
+        @include('products.partials.product-card', [
+          'product' => $product,
+          'categoryName' => $selectedCategory->name
+        ])
+      @endforeach
+    </div>
+
+    @if($products->hasPages())
+      <div class="mt-12 flex justify-center">
+        <div class="bg-white rounded-lg shadow-lg p-4">
+          {{ $products->links() }}
         </div>
+      </div>
+    @endif
         
     @else
         <div class="text-center py-12">
@@ -76,7 +43,48 @@
 </div>
 @endif
 
-@if(!isset($selectedCategory))
+@if($isSearching)
+<section id="search-results" class="py-12">
+  <div class="container mx-auto px-6">
+    <div class="text-center mb-12">
+      <h2 class="text-3xl md:text-4xl font-bold text-[#E0E0E0] mb-3">Hasil Pencarian</h2>
+      <p class="text-gray-400 text-sm md:text-base">Menampilkan produk untuk <span class="text-[#A38560] font-semibold">"{{ request('search') }}"</span></p>
+    </div>
+
+    @if($products->count() > 0)
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+        @foreach($products as $product)
+          @include('products.partials.product-card', ['product' => $product])
+        @endforeach
+      </div>
+
+      @if($products->hasPages())
+        <div class="mt-12 flex justify-center">
+          <div class="bg-white rounded-lg shadow-lg p-4">
+            {{ $products->links() }}
+          </div>
+        </div>
+      @endif
+    @else
+      <div class="text-center py-16">
+        <div class="max-w-md mx-auto">
+          <svg class="mx-auto h-16 w-16 text-gray-400 mb-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+          </svg>
+          <h3 class="text-2xl font-bold text-[#E0E0E0] mb-4">Produk Tidak Ditemukan</h3>
+          <p class="text-gray-400 mb-8">Coba gunakan kata kunci lain atau jelajahi kategori produk kami.</p>
+          <a href="{{ route('home') }}" class="bg-[#A38560] hover:bg-[#8B7355] text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-300">
+            Kembali ke Beranda
+          </a>
+        </div>
+      </div>
+    @endif
+  </div>
+</section>
+
+@endif
+
+@if(!isset($selectedCategory) && !$isSearching)
 <!-- Hero Section -->
 <section class="py-16 flex items-center justify-center">
     <div class="container mx-auto px-6">
@@ -94,11 +102,12 @@
 </section>
 @endif
 
-@if(!isset($selectedCategory))
+@if(!isset($selectedCategory) && !$isSearching)
 <!-- Grid Produk (8 Gambar Kecil) - Hanya tampil di halaman utama -->
 <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 gap-8 mb-12 mt-8">
 @php
-$displayProducts = $products->take(8);
+$isSearching = request()->filled('search');
+$displayProducts = $isSearching ? $products : $products->take(8);
 $productCount = $displayProducts->count();
 @endphp
 
@@ -116,13 +125,15 @@ $productCount = $displayProducts->count();
   </div>
 @endforeach
 
-@for($i = $productCount; $i < 8; $i++)
-  <div class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
-    <div class="w-full h-72 bg-gray-100 flex items-center justify-center">
-      <span class="text-gray-400 text-sm">Coming Soon</span>
+@if(!$isSearching)
+  @for($i = $productCount; $i < 8; $i++)
+    <div class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+      <div class="w-full h-72 bg-gray-100 flex items-center justify-center">
+        <span class="text-gray-400 text-sm">Coming Soon</span>
+      </div>
     </div>
-  </div>
-@endfor
+  @endfor
+@endif
 </div>
 
 
@@ -547,40 +558,6 @@ function slideOuterwear(direction) {
   slider.style.transform = `translateX(-${outerwearIndex * 100}%)`;
 }
 
-// Modal functions
-function closeModal() {
-  const modal = document.getElementById('noProductsModal');
-  if (modal) {
-    modal.classList.add('opacity-0');
-    setTimeout(() => {
-      modal.style.display = 'none';
-    }, 300);
-  }
-}
-
-function clearSearchAndClose() {
-  // Redirect to homepage without search parameters
-  window.location.href = '{{ route("home") }}';
-}
-
-// Close modal when clicking outside
-document.addEventListener('DOMContentLoaded', function() {
-  const modal = document.getElementById('noProductsModal');
-  if (modal) {
-    modal.addEventListener('click', function(e) {
-      if (e.target === modal) {
-        closeModal();
-      }
-    });
-    
-    // Close modal with Escape key
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') {
-        closeModal();
-      }
-    });
-  }
-});
 </script>
 
 

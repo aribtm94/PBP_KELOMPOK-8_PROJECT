@@ -75,21 +75,12 @@ class ProductController extends Controller
             default:
                 $q->latest();
         }
-        $showNoProductsPopup = false;
-
         if ($r->filled('search')) {
             $term = (string) $r->string('search');
-            $searchResults = $q->where('name', 'like', "%{$term}%")->latest()->paginate(12)->withQueryString();
-            
-            // If search found no results, show popup but display all products
-            if ($searchResults->count() === 0) {
-                $showNoProductsPopup = true;
-                // Reset query to show all products
-                $q = Product::query()->with('category')->where('is_active', true);
-                $products = $q->latest()->paginate(12);
-            } else {
-                $products = $searchResults;
-            }
+            $products = $q->where('name', 'like', "%{$term}%")
+                          ->latest()
+                          ->paginate(12)
+                          ->withQueryString();
         } else {
             // No search, show all products normally
             if ($r->filled('category')) {
@@ -100,7 +91,7 @@ class ProductController extends Controller
 
         $categories = Category::orderBy('name')->get();
 
-        return view('products.index', compact('products', 'categories', 'showNoProductsPopup'));
+        return view('products.index', compact('products', 'categories'));
     }
 
     public function show(Product $product)
