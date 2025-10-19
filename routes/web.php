@@ -45,7 +45,8 @@ Route::prefix('admin')
     ->name('admin.')
     ->group(function () {
 
-        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/stats/{date}', [DashboardController::class, 'statsByDate'])->name('dashboard.stats');
 
         Route::controller(ProductAdminController::class)->group(function () {
             Route::get('/products', 'index')->name('products.index');
