@@ -35,18 +35,19 @@
         <td>{{ $o->created_at->format('Y-m-d H:i') }}</td>
         <td>Rp {{ number_format($o->total, 0, ',', '.') }}</td>
         <td>
-          @php $isFinal = in_array($o->status, ['batal','selesai']); @endphp
-          <form method="POST" action="{{ route('admin.orders.status', $o) }}" class="flex items-center gap-2">
-            @csrf @method('PATCH')
-            <select name="status" 
-                    {{ $isFinal ? 'disabled' : '' }}
-                    class="bg-gray-900 border border-gray-600 text-white rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-gray-400">
-              @foreach(['baru','diproses','dikirim','selesai','batal'] as $s)
-                <option value="{{ $s }}" @selected($o->status === $s)>{{ ucfirst($s) }}</option>
-              @endforeach
-            </select>
-            <button type="submit" {{ $isFinal ? 'disabled' : '' }} class="bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded text-sm {{ $isFinal ? 'opacity-50 cursor-not-allowed' : '' }}">Ubah</button>
-          </form>
+          @php
+            $statusClasses = [
+              'baru' => 'bg-yellow-500/20 text-yellow-300',
+              'diproses' => 'bg-blue-500/20 text-blue-300',
+              'dikirim' => 'bg-indigo-500/20 text-indigo-300',
+              'selesai' => 'bg-green-500/20 text-green-300',
+              'batal' => 'bg-red-500/20 text-red-300',
+            ];
+            $statusClass = $statusClasses[$o->status] ?? 'bg-gray-500/20 text-gray-300';
+          @endphp
+          <span class="px-2 py-1 rounded text-xs font-semibold inline-block {{ $statusClass }}">
+            {{ ucfirst($o->status) }}
+          </span>
         </td>
         <td>
           <a href="{{ route('admin.orders.show', $o) }}" 

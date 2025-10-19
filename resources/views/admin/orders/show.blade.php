@@ -1,6 +1,11 @@
 @extends('layouts.app')
 
 @section('content')
+@php
+    $finalStatuses = ['selesai', 'batal'];
+    $isFinalStatus = in_array($order->status, $finalStatuses, true);
+@endphp
+
 <div class="space-y-6 animate-fade-in">
     <h1 class="text-2xl font-bold text-[#E0E0E0] mb-4 border-b border-[#A38560]/30 pb-2">
         Detail Pesanan <span class="text-[#A38560]">#{{ $order->id }}</span>
@@ -35,18 +40,24 @@
         <!-- Ubah Status -->
         <div class="bg-[#1F3A34] border border-[#A38560]/40 rounded-2xl p-5 shadow-lg hover:shadow-xl transition-all">
             <h2 class="text-lg font-semibold text-[#A38560] mb-3">Ubah Status</h2>
-            <form method="POST" action="{{ route('admin.orders.status', $order) }}" class="space-y-4">
-                @csrf
-                @method('PATCH')
-                <select name="status" class="w-full bg-[#16302B] text-white border border-[#A38560]/50 rounded-lg p-2 focus:ring-2 focus:ring-[#A38560]">
-                    @foreach(['baru','diproses','dikirim','selesai','batal'] as $s)
-                        <option value="{{ $s }}" @selected($order->status === $s)>{{ ucfirst($s) }}</option>
-                    @endforeach
-                </select>
-                <button type="submit" class="w-full bg-[#A38560] text-[#390517] font-semibold py-2 rounded-lg hover:bg-[#8B7355] transition-colors">
-                    Simpan Perubahan
-                </button>
-            </form>
+            @if($isFinalStatus)
+                <div class="space-y-3 text-sm text-[#E0E0E0] bg-[#16302B] border border-[#A38560]/30 rounded-lg p-4">
+                    <p>Status pesanan sudah <span class="font-semibold text-[#A38560]">{{ ucfirst($order->status) }}</span> dan tidak dapat diubah lagi.</p>
+                </div>
+            @else
+                <form method="POST" action="{{ route('admin.orders.status', $order) }}" class="space-y-4">
+                    @csrf
+                    @method('PATCH')
+                    <select name="status" class="w-full bg-[#16302B] text-white border border-[#A38560]/50 rounded-lg p-2 focus:ring-2 focus:ring-[#A38560]">
+                        @foreach(['baru','diproses','dikirim','selesai','batal'] as $s)
+                            <option value="{{ $s }}" @selected($order->status === $s)>{{ ucfirst($s) }}</option>
+                        @endforeach
+                    </select>
+                    <button type="submit" class="w-full bg-[#A38560] text-[#390517] font-semibold py-2 rounded-lg hover:bg-[#8B7355] transition-colors">
+                        Simpan Perubahan
+                    </button>
+                </form>
+            @endif
         </div>
     </div>
 
