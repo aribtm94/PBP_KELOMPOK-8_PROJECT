@@ -15,55 +15,63 @@
       <div id="calendar" class="text-center"></div>
     </div>
 
-    {{-- Statistik Pesanan --}}
-    <div class="sm:col-span-2 space-y-4">
-      <div class="bg-[#390517] text-white p-4 rounded-xl shadow-md flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h2 class="text-lg font-semibold">Order Snapshot</h2>
-          <p class="text-sm text-white/80" data-status-range-label>{{ $defaultRangeLabel ?? 'Semua tanggal' }}</p>
-          <p class="hidden text-xs text-red-200 mt-2" data-status-error></p>
-        </div>
-        <button type="button" class="hidden text-sm font-semibold text-[#390517] bg-white/90 hover:bg-white px-3 py-1 rounded-full transition-colors" data-reset-stats>Reset</button>
-      </div>
-
-      <div class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-        <div class="bg-[#390517] text-center text-white p-4 rounded-xl shadow-md">
-          <h2 class="text-lg font-semibold opacity-80 uppercase tracking-wide">New</h2>
-          <div class="text-3xl font-bold mt-2" data-status-value="new">{{ $orderStatusStats['new'] ?? 0 }}</div>
-        </div>
-        <div class="bg-[#390517] text-center text-white p-4 rounded-xl shadow-md">
-          <h2 class="text-lg font-semibold opacity-80 uppercase tracking-wide">Processed</h2>
-          <div class="text-3xl font-bold mt-2" data-status-value="processed">{{ $orderStatusStats['processed'] ?? 0 }}</div>
-        </div>
-        <div class="bg-[#390517] text-center text-white p-4 rounded-xl shadow-md">
-          <h2 class="text-lg font-semibold opacity-80 uppercase tracking-wide">Sent</h2>
-          <div class="text-3xl font-bold mt-2" data-status-value="sent">{{ $orderStatusStats['sent'] ?? 0 }}</div>
-        </div>
-        <div class="bg-[#390517] text-center text-white p-4 rounded-xl shadow-md">
-          <h2 class="text-lg font-semibold opacity-80 uppercase tracking-wide">Finished</h2>
-          <div class="text-3xl font-bold mt-2" data-status-value="finished">{{ $orderStatusStats['finished'] ?? 0 }}</div>
-        </div>
-        <div class="bg-[#390517] text-center text-white p-4 rounded-xl shadow-md">
-          <h2 class="text-lg font-semibold opacity-80 uppercase tracking-wide">Cancelled</h2>
-          <div class="text-3xl font-bold mt-2" data-status-value="cancelled">{{ $orderStatusStats['cancelled'] ?? 0 }}</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="grid grid-cols-1 bg-[#390517] p-6 rounded-2xl shadow-md sm:col-span-2">
-      <h1 class="text-2xl font-bold text-white mb-4">New Orders</h1>
-      <div class="space-y-3">
-        @forelse($newOrders as $order)
-          <div class="flex items-center justify-between bg-white/10 px-4 py-3 rounded-xl">
-            <div>
-              <div class="text-white font-semibold">{{ optional($order->user)->name ?? 'Unknown Customer' }}</div>
-              <div class="text-xs text-gray-300">#{{ $order->order_number ?? $order->id }} • {{ ucfirst($order->status) }}</div>
-            </div>
-            <div class="text-white font-bold whitespace-nowrap">Rp {{ number_format($order->total, 0, ',', '.') }}</div>
+    {{-- Statistik Pesanan dan New Orders --}}
+    <div class="sm:col-span-2 grid grid-cols-1 lg:grid-cols-2 gap-4 lg:items-stretch">
+      <div class="space-y-4">
+        <div class="bg-[#390517] text-white p-4 rounded-xl shadow-md flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 class="text-lg font-semibold">Order Snapshot</h2>
+            <p class="text-sm text-white/80" data-status-range-label>{{ $defaultRangeLabel ?? 'Semua tanggal' }}</p>
+            <p class="hidden text-xs text-red-200 mt-2" data-status-error></p>
           </div>
-        @empty
-          <p class="text-gray-300 text-sm">No new orders awaiting processing.</p>
-        @endforelse
+          <button type="button" class="hidden text-sm font-semibold text-[#390517] bg-white/90 hover:bg-white px-3 py-1 rounded-full transition-colors" data-reset-stats>Reset</button>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="bg-[#390517] text-center text-white p-4 rounded-xl shadow-md">
+            <h2 class="text-lg font-semibold opacity-80 uppercase tracking-wide">New</h2>
+            <div class="text-3xl font-bold mt-2" data-status-value="new">{{ $orderStatusStats['new'] ?? 0 }}</div>
+          </div>
+          <div class="bg-[#390517] text-center text-white p-4 rounded-xl shadow-md">
+            <h2 class="text-lg font-semibold opacity-80 uppercase tracking-wide">Processed</h2>
+            <div class="text-3xl font-bold mt-2" data-status-value="processed">{{ $orderStatusStats['processed'] ?? 0 }}</div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="bg-[#390517] text-center text-white p-4 rounded-xl shadow-md">
+            <h2 class="text-lg font-semibold opacity-80 uppercase tracking-wide">Sent</h2>
+            <div class="text-3xl font-bold mt-2" data-status-value="sent">{{ $orderStatusStats['sent'] ?? 0 }}</div>
+          </div>
+          <div class="bg-[#390517] text-center text-white p-4 rounded-xl shadow-md">
+            <h2 class="text-lg font-semibold opacity-80 uppercase tracking-wide">Finished</h2>
+            <div class="text-3xl font-bold mt-2" data-status-value="finished">{{ $orderStatusStats['finished'] ?? 0 }}</div>
+          </div>
+        </div>
+
+        <div class="flex justify-center">
+          <div class="bg-[#390517] text-center text-white p-4 rounded-xl shadow-md w-full sm:w-1/2">
+            <h2 class="text-lg font-semibold opacity-80 uppercase tracking-wide">Cancelled</h2>
+            <div class="text-3xl font-bold mt-2" data-status-value="cancelled">{{ $orderStatusStats['cancelled'] ?? 0 }}</div>
+          </div>
+        </div>
+      </div>
+
+  <div class="bg-[#390517] p-6 rounded-2xl shadow-md h-full flex flex-col min-h-0">
+        <h1 class="text-2xl font-bold text-white mb-4">New Orders</h1>
+        <div class="space-y-3 flex-1 overflow-y-auto pr-1 max-h-96">
+          @forelse($newOrders as $order)
+            <div class="flex items-center justify-between bg-white/10 px-4 py-3 rounded-xl">
+              <div>
+                <div class="text-white font-semibold">{{ optional($order->user)->name ?? 'Unknown Customer' }}</div>
+                <div class="text-xs text-gray-300">#{{ $order->order_number ?? $order->id }} • {{ ucfirst($order->status) }}</div>
+              </div>
+              <div class="text-white font-bold whitespace-nowrap">Rp {{ number_format($order->total, 0, ',', '.') }}</div>
+            </div>
+          @empty
+            <p class="text-gray-300 text-sm">No new orders awaiting processing.</p>
+          @endforelse
+        </div>
       </div>
     </div>
   </div>

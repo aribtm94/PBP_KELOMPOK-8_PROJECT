@@ -45,7 +45,6 @@ class DashboardController extends Controller
         $newOrders = Order::with('user')
             ->whereNotIn('status', ['selesai', 'batal'])
             ->orderByDesc('created_at')
-            ->take(5)
             ->get();
 
         $today = Carbon::today();
