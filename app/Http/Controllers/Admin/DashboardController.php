@@ -36,9 +36,14 @@ class DashboardController extends Controller
         // Merge so the view can access both overall metrics and order breakdown
         $stats = array_merge($stats, $orderStats);
 
-        // Latest orders with relations for display
         $latestOrders = Order::with('user')->latest()->take(5)->get();
 
-        return view('admin.dashboard', compact('stats', 'latestOrders'));
+        $newOrders = Order::with('user')
+            ->whereNotIn('status', ['selesai', 'batal'])
+            ->orderByDesc('created_at')
+            ->take(5)
+            ->get();
+
+        return view('admin.dashboard', compact('stats', 'latestOrders', 'newOrders'));
     }
 }

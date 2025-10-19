@@ -3,10 +3,10 @@
 @section('content')
 <div class="mt-8">
   <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-    <div class="bg-[#390517] justify-between items-center p-6 mt-8 rounded-2xl shadow-md">
-      <h1 class="text-3xl font-bold text-white">Hello, Admin 👋</h1>
-      <h2 class="text-gray-300 font-semibold">Welcome back to the Gayaku.id Dashboard</h2>
-      <p class="text-gray-300">Here you can manage your orders and view the latest statistics.</p>
+    <div class="bg-[#390517] p-6 mt-8 rounded-2xl shadow-md space-y-1">
+      <h1 class="text-3xl font-bold text-white">Hi Admin 👋</h1>
+      <p class="text-gray-300 font-semibold">Welcome back to Gayaku.id.</p>
+      <p class="text-gray-300 text-sm">Monitor today’s highlights and keep orders moving.</p>
     </div>
 
     {{-- Kalender --}}
@@ -16,30 +16,43 @@
     </div>
 
     {{-- Statistik Pesanan --}}
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-      <div class="bg-[#390517] text-center text-white p-4 rounded-lg shadow-md">
-        <div class="text-3xl font-bold">{{ $stats['new'] ?? 0 }}</div>
-        <div class="opacity-70 text-sm mt-1">New Orders</div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 sm:col-span-2">
+      <div class="bg-[#390517] text-center text-white p-4 rounded-xl shadow-md">
+        <h2 class="text-lg font-semibold opacity-80 uppercase tracking-wide">New</h2>
+        <div class="text-3xl font-bold mt-2">{{ $stats['new'] ?? 0 }}</div>
       </div>
-      <div class="bg-[#390517] text-center text-white p-4 rounded-lg shadow-md">
-        <div class="text-3xl font-bold">{{ $stats['processed'] ?? 0 }}</div>
-        <div class="opacity-70 text-sm mt-1">Processed</div>
+      <div class="bg-[#390517] text-center text-white p-4 rounded-xl shadow-md">
+        <h2 class="text-lg font-semibold opacity-80 uppercase tracking-wide">Processed</h2>
+        <div class="text-3xl font-bold mt-2">{{ $stats['processed'] ?? 0 }}</div>
       </div>
-      <div class="bg-[#390517] text-center text-white p-4 rounded-lg shadow-md">
-        <div class="text-3xl font-bold">{{ $stats['sent'] ?? 0 }}</div>
-        <div class="opacity-70 text-sm mt-1">Sent</div>
+      <div class="bg-[#390517] text-center text-white p-4 rounded-xl shadow-md">
+        <h2 class="text-lg font-semibold opacity-80 uppercase tracking-wide">Sent</h2>
+        <div class="text-3xl font-bold mt-2">{{ $stats['sent'] ?? 0 }}</div>
       </div>
-      <div class="bg-[#390517] text-center text-white p-4 rounded-lg shadow-md">
-        <div class="text-3xl font-bold">{{ $stats['finished'] ?? 0 }}</div>
-        <div class="opacity-70 text-sm mt-1">Finished</div>
+      <div class="bg-[#390517] text-center text-white p-4 rounded-xl shadow-md">
+        <h2 class="text-lg font-semibold opacity-80 uppercase tracking-wide">Finished</h2>
+        <div class="text-3xl font-bold mt-2">{{ $stats['finished'] ?? 0 }}</div>
       </div>
-      <div class="bg-[#390517] text-center text-white p-4 rounded-lg shadow-md">
-        <div class="text-3xl font-bold">{{ $stats['cancelled'] ?? 0 }}</div>
-        <div class="opacity-70 text-sm mt-1">Cancelled</div>
+      <div class="bg-[#390517] text-center text-white p-4 rounded-xl shadow-md">
+        <h2 class="text-lg font-semibold opacity-80 uppercase tracking-wide">Cancelled</h2>
+        <div class="text-3xl font-bold mt-2">{{ $stats['cancelled'] ?? 0 }}</div>
       </div>
     </div>
-      <div class="bg-[#390517] p-6 rounded-2xl shadow-md">
-      <h1 class="text-2xl font-bold text-white">New Orders</h1>
+    <div class="bg-[#390517] p-6 rounded-2xl shadow-md sm:col-span-2">
+      <h1 class="text-2xl font-bold text-white mb-4">New Orders</h1>
+      <div class="space-y-3">
+        @forelse($newOrders as $order)
+          <div class="flex items-center justify-between bg-white/10 px-4 py-3 rounded-xl">
+            <div>
+              <div class="text-white font-semibold">{{ optional($order->user)->name ?? 'Unknown Customer' }}</div>
+              <div class="text-xs text-gray-300">#{{ $order->order_number ?? $order->id }} • {{ ucfirst($order->status) }}</div>
+            </div>
+            <div class="text-white font-bold whitespace-nowrap">Rp {{ number_format($order->total, 0, ',', '.') }}</div>
+          </div>
+        @empty
+          <p class="text-gray-300 text-sm">No new orders awaiting processing.</p>
+        @endforelse
+      </div>
     </div>
   </div>
 </div>
