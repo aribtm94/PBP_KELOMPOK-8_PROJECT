@@ -179,7 +179,7 @@
                     <a href="{{ route('admin.orders.index') }}" class="{{ request()->routeIs('admin.orders.*') ? 'text-[#E0E0E0]' : 'text-[#390517]' }} font-bold hover:opacity-75 px-3 transition-opacity">
                         📋 Kelola Pesanan
                     </a>
-                    <a href="{{ route('home') }}" class="text-[#390517] font-bold hover:opacity-75 px-3 transition-opacity">
+                    <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'text-[#E0E0E0]' : 'text-[#390517]' }} font-bold hover:opacity-75 px-3 transition-opacity">
                         🏠 Lihat Toko
                     </a>
                 </div>
@@ -326,7 +326,7 @@
                         <!-- Admin Mobile Navigation -->
                         <a href="{{ route('admin.products.index') }}" class="{{ request()->routeIs('admin.products.*') ? 'text-[#E0E0E0]' : 'text-[#390517]' }} font-bold hover:opacity-75 py-2 transition-opacity">📦 Kelola Produk</a>
                         <a href="{{ route('admin.orders.index') }}" class="{{ request()->routeIs('admin.orders.*') ? 'text-[#E0E0E0]' : 'text-[#390517]' }} font-bold hover:opacity-75 py-2 transition-opacity">📋 Kelola Pesanan</a>
-                        <a href="{{ route('home') }}" class="text-[#390517] font-bold hover:opacity-75 py-2 transition-opacity">🏠 Lihat Toko</a>
+                        <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'text-[#E0E0E0]' : 'text-[#390517]' }} font-bold hover:opacity-75 py-2 transition-opacity">🏠 Lihat Toko</a>
                     @else
                         <!-- User Mobile Navigation -->
                         <a href="{{ route('kemeja') }}" class="{{ Route::currentRouteName() == 'kemeja' ? 'text-[#E0E0E0]' : 'text-[#390517]' }} font-bold hover:opacity-75 py-2 transition-opacity">T-Shirts</a>
