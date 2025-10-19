@@ -55,15 +55,6 @@
         <input type="number" name="stock" id="product-stock" class="w-full px-3 py-2 rounded bg-[#0F3B38] text-white">
         </div>
 
-        <div>
-          <label class="block mb-1 text-sm">Color</label>
-        <input type="text" name="color" id="product-color" class="w-full px-3 py-2 rounded bg-[#0F3B38] text-white" placeholder="comma separated">
-        </div>
-
-        <div>
-          <label class="block mb-1 text-sm">Size</label>
-        <input type="text" name="size" id="product-size" class="w-full px-3 py-2 rounded bg-[#0F3B38] text-white" placeholder="comma separated">
-        </div>
 
         <div>
           <label class="block mb-1 text-sm">Image</label>
@@ -90,7 +81,7 @@
       <div class="border rounded-lg p-4 bg-[#073231]">
         <div class="grid grid-cols-4 gap-6">
           @foreach ($products as $product)
-              <div tabindex="0" role="button" class="bg-white text-black rounded-lg overflow-hidden shadow cursor-pointer product-card" data-id="{{ $product->id }}" data-name="{{ e($product->name) }}" data-price="{{ $product->price }}" data-stock="{{ $product->stock }}" data-category="{{ $product->category_id }}" data-color="{{ e($product->color ?? '') }}" data-size="{{ e($product->size ?? '') }}" data-description="{{ e($product->description ?? '') }}" data-image="{{ $product->image_path ? asset('storage/'.$product->image_path) : '' }}">
+              <div tabindex="0" role="button" class="bg-white text-black rounded-lg overflow-hidden shadow cursor-pointer product-card" data-id="{{ $product->id }}" data-name="{{ e($product->name) }}" data-price="{{ $product->price }}" data-stock="{{ $product->stock }}" data-category="{{ $product->category_id }}" data-description="{{ e($product->description ?? '') }}" data-image="{{ $product->image_path ? asset('storage/'.$product->image_path) : '' }}">
               <div class="h-56 bg-gray-200 flex items-center justify-center">
                 @if($product->image_path)
                   <img src="{{ asset('storage/'.$product->image_path) }}" class="h-full w-full object-cover" alt="{{ $product->name }}">
@@ -141,8 +132,6 @@
                 price: document.getElementById('product-price'),
                 category: document.getElementById('product-category'),
                 stock: document.getElementById('product-stock'),
-                color: document.getElementById('product-color'),
-                size: document.getElementById('product-size'),
                 description: document.getElementById('product-description'),
                 imagePreview: document.getElementById('image-preview')
               };
@@ -156,8 +145,6 @@
                 if (fields.price) fields.price.value = '';
                 if (fields.category) fields.category.value = '';
                 if (fields.stock) fields.stock.value = '';
-                if (fields.color) fields.color.value = '';
-                if (fields.size) fields.size.value = '';
                 if (fields.description) fields.description.value = '';
                 if (fields.imagePreview) fields.imagePreview.innerHTML = 'Preview';
               }
@@ -168,8 +155,6 @@
                 const price = card.dataset.price || '';
                 const stock = card.dataset.stock || '';
                 const category = card.dataset.category || '';
-                const color = card.dataset.color || '';
-                const size = card.dataset.size || '';
                 const description = card.dataset.description || '';
                 const image = card.dataset.image || '';
 
@@ -182,8 +167,6 @@
                 if (fields.price) fields.price.value = price;
                 if (fields.category) fields.category.value = category;
                 if (fields.stock) fields.stock.value = stock;
-                if (fields.color) fields.color.value = color;
-                if (fields.size) fields.size.value = size;
                 if (fields.description) fields.description.value = description;
                 if (fields.imagePreview) {
                   if (image) {
