@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="mt-8">
-  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+  <div class="grid grid-cols-2 sm:grid-cols-2 gap-4">
     <div class="bg-[#390517] p-6 mt-8 rounded-2xl shadow-md space-y-1">
       <h1 class="text-3xl font-bold text-white">Hi Admin 👋</h1>
       <p class="text-gray-300 font-semibold">Welcome back to Gayaku.id.</p>
@@ -16,7 +16,7 @@
     </div>
 
     {{-- Statistik Pesanan --}}
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 sm:col-span-2">
+    <div class="grid grid-cols-2 sm:grid-cols-2 gap-4 sm:col-span-1">
       <div class="bg-[#390517] text-center text-white p-4 rounded-xl shadow-md">
         <h2 class="text-lg font-semibold opacity-80 uppercase tracking-wide">New</h2>
         <div class="text-3xl font-bold mt-2">{{ $stats['new'] ?? 0 }}</div>
@@ -38,7 +38,8 @@
         <div class="text-3xl font-bold mt-2">{{ $stats['cancelled'] ?? 0 }}</div>
       </div>
     </div>
-    <div class="bg-[#390517] p-6 rounded-2xl shadow-md sm:col-span-2">
+    
+    <div class="grid grid-cols-1 bg-[#390517] p-6 rounded-2xl shadow-md ">
       <h1 class="text-2xl font-bold text-white mb-4">New Orders</h1>
       <div class="space-y-3">
         @forelse($newOrders as $order)
